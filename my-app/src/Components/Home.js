@@ -15,7 +15,7 @@ function Home() {
 
   const fetchAccessToken = (code) => {
     // Fetch access token from your server, assuming you have set up a server endpoint to exchange the code for a token
-    axios.get(`/server/endpoint?code=${code}`)
+    axios.post(`/spotify/get-token`, { code: code })
     .then(res => {
         // Here you'll get the access token, store it for further use
         const accessToken = res.data.access_token;

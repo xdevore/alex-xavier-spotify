@@ -3,7 +3,7 @@ import axios from 'axios';
 
 function Login() {
   const redirectToSpotify = () => {
-    // Replace these with your client ID and redirect URI
+    
     const CLIENT_ID = 'f96c84ccf962498b8499d78509c90ebf';
     const REDIRECT_URI = 'http://localhost:3004/home'; 
     
