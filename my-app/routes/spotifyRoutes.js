@@ -11,7 +11,7 @@ router.post('/get-token', async (req, res) => {
         const response = await axios({
             method: 'post',
             url: 'https://accounts.spotify.com/api/token',
-            data: `grant_type=authorization_code&code=${authCode}&redirect_uri=http://localhost:3004/home`,
+            data: `grant_type=authorization_code&code=${authCode}&redirect_uri=http://localhost:3000/login`,
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
                 'Authorization': 'Basic ' + (new Buffer(CLIENT_ID + ':' + CLIENT_SECRET).toString('base64'))

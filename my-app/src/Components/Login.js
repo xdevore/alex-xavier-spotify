@@ -1,11 +1,46 @@
-import React from 'react';
+// Login.js
+
+
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom'; // Import the useNavigate hook
 
 function Login() {
-  const redirectToSpotify = () => {
+  const [accessToken, setAccessToken] = useState(localStorage.getItem("spotify_access_token") || null);
+  const navigate = useNavigate(); // Create a reference to the navigate function
+
+  useEffect(() => {
+    const url = window.location.href;
+    const hasCode = url.includes("?code=");
+    console.log(accessToken)
     
+    if (accessToken) {
+      navigate("/home", { state: { accessToken } });
+    }else if (!accessToken && hasCode) {
+      const newUrl = new URL(url);
+      const AUTH_CODE = newUrl.searchParams.get("code");
+      console.log("havetoken")
+      fetchAccessToken(AUTH_CODE);
+    }
+  }, [accessToken]);
+
+  const fetchAccessToken = (code) => {
+    axios.post(`http://localhost:6969/spotify/get-token`, { code: code })
+    .then(res => {
+        const fetchedToken = res.data.access_token;
+        localStorage.setItem("spotify_access_token", fetchedToken);
+        setAccessToken(fetchedToken);
+        console.log("Access Token: ", fetchedToken);
+        
+        // Navigate to Home with the access token
+        navigate("/home", { state: { accessToken: fetchedToken } });
+    })
+    .catch(err => console.log(err));
+  };
+
+  const redirectToSpotify = () => {
     const CLIENT_ID = 'f96c84ccf962498b8499d78509c90ebf';
-    const REDIRECT_URI = 'http://localhost:3004/home'; 
+    const REDIRECT_URI = 'http://localhost:3000/login'; 
     
     const authURL = `https://accounts.spotify.com/authorize?client_id=${CLIENT_ID}&response_type=code&redirect_uri=${REDIRECT_URI}&scope=user-top-read`;
     
@@ -21,4 +56,5 @@ function Login() {
 }
 
 export default Login;
+
 
