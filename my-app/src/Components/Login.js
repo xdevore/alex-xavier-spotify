@@ -1,12 +1,12 @@
 // Login.js
 
-
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom'; // Import the useNavigate hook
 
 function Login() {
   const [accessToken, setAccessToken] = useState(localStorage.getItem("spotify_access_token") || null);
+  const [userProfile, setUserProfule] = useState(localStorage.getItem("spotify_user_profile") || null);
   const navigate = useNavigate(); // Create a reference to the navigate function
 
   useEffect(() => {
@@ -15,8 +15,9 @@ function Login() {
     console.log(accessToken)
     
     if (accessToken) {
+      console.log(fetchUserProfile(accessToken));
       navigate("/home", { state: { accessToken } });
-    }else if (!accessToken && hasCode) {
+    } else if (!accessToken && hasCode) {
       const newUrl = new URL(url);
       const AUTH_CODE = newUrl.searchParams.get("code");
       console.log("havetoken")
@@ -37,6 +38,14 @@ function Login() {
     })
     .catch(err => console.log(err));
   };
+
+  async function fetchUserProfile(token) {
+    const result = await fetch("https://api.spotify.com/v1/me", {
+        method: "GET", headers: { Authorization: `Bearer ${token}` }
+    });
+
+    return await result.json();
+  }
 
   const redirectToSpotify = () => {
     const CLIENT_ID = 'f96c84ccf962498b8499d78509c90ebf';
