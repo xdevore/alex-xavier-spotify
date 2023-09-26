@@ -14,10 +14,11 @@ function Login() {
     const hasCode = url.includes("?code=");
     console.log(accessToken)
     
-    if (accessToken) {
-      console.log(fetchUserProfile(accessToken));
-      navigate("/home", { state: { accessToken } });
-    } else if (!accessToken && hasCode) {
+    // if (accessToken) {
+    //   console.log(fetchUserProfile(accessToken));
+    //   navigate("/home", { state: { accessToken } });
+    // } else if (!accessToken && hasCode) {
+      if (hasCode) {
       const newUrl = new URL(url);
       const AUTH_CODE = newUrl.searchParams.get("code");
       console.log("havetoken")
@@ -31,6 +32,7 @@ function Login() {
         const fetchedToken = res.data.access_token;
         localStorage.setItem("spotify_access_token", fetchedToken);
         setAccessToken(fetchedToken);
+        console.log(fetchUserProfile(accessToken));
         console.log("Access Token: ", fetchedToken);
         
         // Navigate to Home with the access token
