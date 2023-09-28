@@ -6,7 +6,6 @@ import { useNavigate } from 'react-router-dom'; // Import the useNavigate hook
 
 function Login() {
   const [accessToken, setAccessToken] = useState(localStorage.getItem("spotify_access_token") || null);
-  const [userProfile, setUserProfule] = useState(localStorage.getItem("spotify_user_profile") || null);
   const navigate = useNavigate(); // Create a reference to the navigate function
 
   useEffect(() => {
@@ -28,15 +27,19 @@ function Login() {
 
   const fetchAccessToken = (code) => {
     axios.post(`http://localhost:6969/spotify/get-token`, { code: code })
-    .then(res => {
+    .then(async res => {
         const fetchedToken = res.data.access_token;
         localStorage.setItem("spotify_access_token", fetchedToken);
         setAccessToken(fetchedToken);
-        console.log(fetchUserProfile(accessToken));
+        var userProfile = await fetchUserProfile(fetchedToken);
+        var username = userProfile["display_name"];
+        var userId = userProfile["id"];
         console.log("Access Token: ", fetchedToken);
-        
+        console.log("Username: ", username);
+        console.log("User ID: ", userId);
+
         // Navigate to Home with the access token
-        navigate("/home", { state: { accessToken: fetchedToken } });
+        navigate("/home", { state: { accessToken: fetchedToken, username: username, userId: userId } });
     })
     .catch(err => console.log(err));
   };
