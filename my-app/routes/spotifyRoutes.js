@@ -22,6 +22,7 @@ router.post('/get-token', async (req, res) => {
         res.json({ access_token: accessToken });
 
     } catch (error) {
+        console.log(error.message)
         console.error('Error fetching the Spotify access token:', error.response ? error.response.data : error.message);
         res.status(500).send('Error fetching the Spotify access token.');
     }
