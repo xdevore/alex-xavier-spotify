@@ -1,0 +1,1 @@
+//call to db to make a bar that will all be alligned into days, months
