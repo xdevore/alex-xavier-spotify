@@ -27,4 +27,7 @@ function Home() {
 }
 
 export default Home;
-
+//make sure all bars are loaded in order
+// const handleOperationsInOrder = async () => {
+//   const promises = items.map(item => asyncOperation(item));
+//   const results = await Promise.all(promises);

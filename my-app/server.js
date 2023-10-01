@@ -1,16 +1,23 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const cors = require('cors');  // <-- Import the cors library
+const cors = require('cors');  
 const app = express();
 const PORT = 6969;
 
-app.use(cors());  // <-- Use the cors middleware here
+const spotifyRoutes = require('./routes/spotifyRoutes');
+const userRoutes = require('./routes/usersRoutes'); 
+const songsRoutes = require('./routes/songsRoutes');
+
+app.use(cors());  
 
 app.use(bodyParser.json());
 
-// Routes import
-const spotifyRoutes = require('./routes/spotifyRoutes');
+
+
 app.use('/spotify', spotifyRoutes);
+app.use('/api/users', userRoutes); // Use your user routes under /api/users
+app.use('/api/songs', songsRoutes);
+ 
 
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);

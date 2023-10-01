@@ -5,13 +5,13 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom'; // Import the useNavigate hook
 
 function Login() {
-  const [accessToken, setAccessToken] = useState(localStorage.getItem("spotify_access_token") || null);
+  //const [accessToken, setAccessToken] = useState(localStorage.getItem("spotify_access_token") || null);
   const navigate = useNavigate(); // Create a reference to the navigate function
 
   useEffect(() => {
     const url = window.location.href;
     const hasCode = url.includes("?code=");
-    console.log(accessToken)
+    //console.log(accessToken)
     
     // if (accessToken) {
     //   console.log(fetchUserProfile(accessToken));
@@ -23,26 +23,29 @@ function Login() {
       console.log("havetoken")
       fetchAccessToken(AUTH_CODE);
     }
-  }, [accessToken]);
+  }, []);
 
-  const fetchAccessToken = (code) => {
-    axios.post(`http://localhost:6969/spotify/get-token`, { code: code })
-    .then(async res => {
+  async function fetchAccessToken(code) {
+    try {
+        const res = await axios.post(`http://localhost:6969/spotify/get-token`, { code: code });
         const fetchedToken = res.data.access_token;
         localStorage.setItem("spotify_access_token", fetchedToken);
-        setAccessToken(fetchedToken);
-        var userProfile = await fetchUserProfile(fetchedToken);
-        var username = userProfile["display_name"];
-        var userId = userProfile["id"];
+
+        const userProfile = await fetchUserProfile(fetchedToken);
+        const username = userProfile["display_name"];
+        const userId = userProfile["id"];
+        
         console.log("Access Token: ", fetchedToken);
         console.log("Username: ", username);
         console.log("User ID: ", userId);
 
-        // Navigate to Home with the access token
         navigate("/home", { state: { accessToken: fetchedToken, username: username, userId: userId } });
-    })
-    .catch(err => console.log(err));
-  };
+        
+    } catch (err) {
+        console.log(err);
+    }
+}
+
 
   async function fetchUserProfile(token) {
     const result = await fetch("https://api.spotify.com/v1/me", {
