@@ -1,8 +1,11 @@
-import React from 'react';
+import React, { useState, useEffect } from "react";
 import { useLocation } from 'react-router-dom';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
+
+import RefreshButton from './refreshButton';
+
 
 function Home() {
   const location = useLocation();
@@ -22,6 +25,11 @@ function Home() {
           {accessToken && <p style={{ fontFamily: "Times New Roman, serif" }}><center>Your Access Token: {accessToken}</center></p>}
         </Col>
       </Row>
+      <Row className="justify-content-md-center">
+    <Col>
+      <RefreshButton userId={userId} />
+    </Col>
+  </Row>
     </Container>
   );
 }
