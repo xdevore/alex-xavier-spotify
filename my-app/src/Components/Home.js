@@ -5,6 +5,7 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 
 import RefreshButton from './refreshButton';
+import SearchBar from './searchBar'
 
 
 function Home() {
@@ -28,6 +29,9 @@ function Home() {
       <Row className="justify-content-md-center">
     <Col>
       <RefreshButton userId={userId} />
+    </Col>
+    <Col>
+    <SearchBar tok = "BQBacQFGnuZYT9778zBrWkdbvIDaTVtPOpCm7UKK7H_NNuyq3SVZRf_JdZp4z4kHGuL-HJ9kUlhJ7oI0l4jaMGabSFWh2VnsDEfb0d4VrN1ZKK4MwkZMmrkQPWIA1unJE8wLzYC8-z6cwwM59LJWFqVEACiMrchG8tDBffib6T7lpxJaLx8umXb78VM_zgQ4"/>
     </Col>
   </Row>
     </Container>
