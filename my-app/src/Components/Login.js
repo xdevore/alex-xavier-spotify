@@ -30,7 +30,7 @@ function Login() {
         const res = await axios.post(`http://localhost:6969/spotify/get-token`, { code: code });
         const fetchedToken = res.data.access_token;
         localStorage.setItem("spotify_access_token", fetchedToken);
-
+        
         const userProfile = await fetchUserProfile(fetchedToken);
         const username = userProfile["display_name"];
         const userId = userProfile["id"];
@@ -38,12 +38,23 @@ function Login() {
         console.log("Access Token: ", fetchedToken);
         console.log("Username: ", username);
         console.log("User ID: ", userId);
+        addUser(userId)
 
         navigate("/home", { state: { accessToken: fetchedToken, username: username, userId: userId } });
         
     } catch (err) {
         console.log(err);
     }
+}
+
+async function addUser(userId){
+  try {
+      console.log("FUCKINGRUNTHISSHIT")
+      const response = await axios.post('http://localhost:6969/api/user/', { userId: userId });
+      console.log('User added:', response.data);
+  } catch (error) {
+      console.error('Error adding user:', error);
+  }
 }
 
 

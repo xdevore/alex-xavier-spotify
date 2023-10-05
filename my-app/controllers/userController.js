@@ -5,9 +5,9 @@ const User = require('../models/userModel.js');
 
 exports.addUser = async (req, res) => {
     try {
+        console.log("FUCKTHISSHITM8")
         const newUser = new User({
-            userId: req.body.userId,
-            lastPull: req.body.lastPull 
+            userId: req.body.userId
         });
 
         await newUser.save();

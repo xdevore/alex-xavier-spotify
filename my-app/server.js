@@ -7,7 +7,7 @@ const PORT = 6969;
 
 const spotifyRoutes = require('./routes/spotifyRoutes');
 const songRoutes = require('./routes/songRoutes'); 
-const songsRoutes = require('./routes/songsRoutes');
+const userRoutes = require('./routes/userRoutes');
 
 const mongoURI = 'mongodb://localhost:27017/RockOut'; 
 mongoose.connect(mongoURI, {
@@ -24,9 +24,17 @@ app.use(cors());
 app.use(bodyParser.json());
 
 
+app.use((req, res, next) => {
+    console.log(`Received request: ${req.method} ${req.path}`);
+    next();
+});
 
 app.use('/spotify', spotifyRoutes);
 app.use('/api/songs', songRoutes);
+app.use('/api/user', (req, res, next) => {
+    console.log('Request made to /api/user');
+    next();
+}, userRoutes);
  
 
 app.listen(PORT, () => {
