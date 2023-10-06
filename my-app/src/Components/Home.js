@@ -6,7 +6,8 @@ import Col from 'react-bootstrap/Col';
 
 import RefreshButton from './refreshButton';
 import SearchBar from './searchBar'
-import Time from './barChart/time'
+//import Time from './barChart/time'
+import BarChart from './barChart/barHolder';
 
 
 function Home() {
@@ -15,6 +16,13 @@ function Home() {
   const userDisplayName = location.state ? location.state.userDisplayName : null;
   const userId = location.state ? location.state.userId : null;
 
+  // const test = Time.getCurrentYearRange();
+  // console.log(test);
+  // console.log(Time.moveRange(test, 'year', 'back'));
+  // const makeMonth = Time.splitRangeIntoSubRanges(test,'year');
+  // console.log(makeMonth);
+  // console.log(Time.splitRangeIntoSubRanges(makeMonth[1],'month'));
+  
 
   return (
     <Container>
@@ -29,11 +37,15 @@ function Home() {
         </Col>
       </Row>
       <Row className="justify-content-md-center">
-    <Col>
-      <RefreshButton userId={userId} />
-    </Col>
-    
-  </Row>
+        <Col>
+          <BarChart />
+        </Col>
+      </Row>
+      <Row className="justify-content-md-center">
+        <Col>
+          <RefreshButton userId={userId} />
+        </Col>
+      </Row>
     </Container>
   );
 }
