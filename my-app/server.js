@@ -31,10 +31,6 @@ app.use((req, res, next) => {
 
 app.use('/spotify', spotifyRoutes);
 app.use('/api/songs', songRoutes);
-app.use('/api/user', (req, res, next) => {
-    console.log('Request made to /api/user');
-    next();
-}, userRoutes);
  
 
 app.listen(PORT, () => {
