@@ -30,23 +30,40 @@ function Login() {
         const res = await axios.post(`http://localhost:6969/spotify/get-token`, { code: code });
         const fetchedToken = res.data.access_token;
         localStorage.setItem("spotify_access_token", fetchedToken);
-
-        console.log("got a token")
-        console.log(fetchedToken)
-
-        const userProfileRes = await axios.post(`http://localhost:6969/spotify/fetch-user-profile`, { accessToken: fetchedToken });
-        const userDisplayName = res.data.userDisplayName;
-        const userId = res.data.userId;
+        
+        const userProfile = await fetchUserProfile(fetchedToken);
+        const username = userProfile["display_name"];
+        const userId = userProfile["id"];
         
         console.log("Access Token: ", fetchedToken);
         console.log("Username: ", username);
         console.log("User ID: ", userId);
+        addUser(userId)
 
         navigate("/home", { state: { accessToken: fetchedToken, username: username, userId: userId } });
         
     } catch (err) {
         console.log(err);
     }
+}
+
+async function addUser(userId){
+  try {
+      console.log("FUCKINGRUNTHISSHIT")
+      const response = await axios.post('http://localhost:6969/api/user/', { userId: userId });
+      console.log('User added:', response.data);
+  } catch (error) {
+      console.error('Error adding user:', error);
+  }
+}
+
+
+  async function fetchUserProfile(token) {
+    const result = await fetch("https://api.spotify.com/v1/me", {
+        method: "GET", headers: { Authorization: `Bearer ${token}` }
+    });
+
+    return await result.json();
   }
 
   const redirectToSpotify = () => {

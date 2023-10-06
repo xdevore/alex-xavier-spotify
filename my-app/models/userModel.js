@@ -10,7 +10,7 @@ const userSchema = new mongoose.Schema({
   },
   lastPull: {
     type: Number, 
-    required: true
+    required: false
   }
 });
 

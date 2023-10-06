@@ -1,11 +1,11 @@
 const router = require("express").Router();
-const songController = require("../controllers/userController");
+const songController = require("../controllers/songController");
 
 router.route("/")
   .post(songController.addSong);
 
-router.route("/:userId/")
-  .post(songController.populateSongs);
 
+router.route("/:userId/")
+  .get(songController.getSongsByUserId);
 
 module.exports = router;
