@@ -31,6 +31,7 @@ app.use((req, res, next) => {
 
 app.use('/spotify', spotifyRoutes);
 app.use('/api/songs', songRoutes);
+app.use('/api/users', userRoutes)
  
 
 app.listen(PORT, () => {

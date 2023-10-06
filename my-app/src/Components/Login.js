@@ -45,12 +45,14 @@ function Login() {
     } catch (err) {
         console.log(err);
     }
-  }
+}
+
+
 
   async function addUser(userId){
     try {
         console.log("FUCKINGRUNTHISSHIT")
-        const response = await axios.post('http://localhost:6969/api/user/', { userId: userId });
+        const response = await axios.post('http://localhost:6969/api/users/', { userId: userId });
         console.log('User added:', response.data);
     } catch (error) {
         console.error('Error adding user:', error);
