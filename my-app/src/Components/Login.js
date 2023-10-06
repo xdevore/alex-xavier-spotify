@@ -31,9 +31,12 @@ function Login() {
         const fetchedToken = res.data.access_token;
         localStorage.setItem("spotify_access_token", fetchedToken);
 
-        const userProfile = await fetchUserProfile(fetchedToken);
-        const username = userProfile["display_name"];
-        const userId = userProfile["id"];
+        console.log("got a token")
+        console.log(fetchedToken)
+
+        const userProfileRes = await axios.post(`http://localhost:6969/spotify/fetch-user-profile`, { accessToken: fetchedToken });
+        const userDisplayName = res.data.userDisplayName;
+        const userId = res.data.userId;
         
         console.log("Access Token: ", fetchedToken);
         console.log("Username: ", username);
@@ -44,15 +47,6 @@ function Login() {
     } catch (err) {
         console.log(err);
     }
-}
-
-
-  async function fetchUserProfile(token) {
-    const result = await fetch("https://api.spotify.com/v1/me", {
-        method: "GET", headers: { Authorization: `Bearer ${token}` }
-    });
-
-    return await result.json();
   }
 
   const redirectToSpotify = () => {
