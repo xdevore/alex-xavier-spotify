@@ -28,7 +28,7 @@ function Home() {
     <Container>
       <Row className="align-items-center" style={{height:"100px"}}>
         <Col>
-          {username && <p style={{ margin:50, fontSize: '40px', fontFamily: "Times New Roman, serif" }}><center>Welcome, {userDisplayName}</center></p>}
+          { <p style={{ margin:50, fontSize: '40px', fontFamily: "Times New Roman, serif" }}><center>Welcome, {userId}</center></p>}
         </Col>
       </Row>
       <Row className="justify-content-md-center">

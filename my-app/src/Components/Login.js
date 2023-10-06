@@ -33,7 +33,7 @@ function Login() {
         
         const userProfileRes = await axios.post(`http://localhost:6969/spotify/fetch-user-profile`, { accessToken: fetchedToken });
         const userDisplayName = res.data.userDisplayName;
-        const userId = res.data.userId;
+        const userId = userProfileRes.data.userId;
         
         console.log("Access Token: ", fetchedToken);
         console.log("User Display Name: ", userDisplayName);
@@ -47,20 +47,12 @@ function Login() {
     }
 }
 
-async function addUser(userId){
-  try {
-      console.log("FUCKINGRUNTHISSHIT")
-      const response = await axios.post('http://localhost:6969/api/users/', { userId: userId });
-      console.log('User added:', response.data);
-  } catch (error) {
-      console.error('Error adding user:', error);
-  }
-}
+
 
   async function addUser(userId){
     try {
         console.log("FUCKINGRUNTHISSHIT")
-        const response = await axios.post('http://localhost:6969/api/user/', { userId: userId });
+        const response = await axios.post('http://localhost:6969/api/users/', { userId: userId });
         console.log('User added:', response.data);
     } catch (error) {
         console.error('Error adding user:', error);
@@ -82,6 +74,8 @@ async function addUser(userId){
       <button onClick={redirectToSpotify}>Login with Spotify</button>
     </div>
   );
-};
+}
 
-export default Login; 
+export default Login;
+
+
