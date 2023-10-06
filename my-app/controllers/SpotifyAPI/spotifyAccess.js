@@ -50,24 +50,24 @@ exports.fetchUserProfile = async (req, res) => {
     }
 };
 
-// exports.getSongIds = async (req, res) => {
-//     try {
-//         const response = await axios({
-//             method: 'post',
-//             url: 'https://api.spotify.com/v1/me/player/recently-played',
-//             data: `grant_type=authorization_code&code=${authCode}&redirect_uri=http://localhost:3000/login`,
-//             headers: {
-//                 'Content-Type': 'application/x-www-form-urlencoded',
-//                 'Authorization': 'Basic ' + (new Buffer(CLIENT_ID + ':' + CLIENT_SECRET).toString('base64'))
-//             },
-//         });
-//         console.log("this runs")
-//         const accessToken = response.data.access_token;
-//         res.json({ access_token: accessToken });
+exports.getRecentlyPlayedSongIds = async (req, res) => {
+    try {
+        const response = await axios({
+            method: 'post',
+            url: 'https://api.spotify.com/v1/me/player/recently-played',
+            data: `grant_type=authorization_code&code=${authCode}&redirect_uri=http://localhost:3000/login`,
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'Authorization': 'Basic ' + (new Buffer(CLIENT_ID + ':' + CLIENT_SECRET).toString('base64'))
+            },
+        });
+        console.log("this runs")
+        const accessToken = response.data.access_token;
+        res.json({ access_token: accessToken });
         
 
-//     } catch (error) {
-//         console.error('Error fetching the Spotify access token:', error.response ? error.response.data : error.message);
-//         res.status(500).send('Error fetching the Spotify access token.');
-//     }
-// };
+    } catch (error) {
+        console.error('Error fetching the recently played songs from Spotify:', error.response ? error.response.data : error.message);
+        res.status(500).send('Error fetching the recently played songs from Spotify');
+    }
+};
