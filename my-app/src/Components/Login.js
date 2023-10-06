@@ -32,8 +32,8 @@ function Login() {
         localStorage.setItem("spotify_access_token", fetchedToken);
         
         const userProfileRes = await axios.post(`http://localhost:6969/spotify/fetch-user-profile`, { accessToken: fetchedToken });
-        const userDisplayName = res.data.userDisplayName;
-        const userId = res.data.userId;
+        const userDisplayName = userProfileRes.data.userDisplayName;
+        const userId = userProfileRes.data.userId;
         
         console.log("Access Token: ", fetchedToken);
         console.log("User Display Name: ", userDisplayName);
@@ -60,8 +60,9 @@ function Login() {
   const redirectToSpotify = () => {
     const CLIENT_ID = 'f96c84ccf962498b8499d78509c90ebf';
     const REDIRECT_URI = 'http://localhost:3000/login'; 
+    const scopes = ['user-top-read', 'user-read-recently-played'];
     
-    const authURL = `https://accounts.spotify.com/authorize?client_id=${CLIENT_ID}&response_type=code&redirect_uri=${REDIRECT_URI}&scope=user-top-read`;
+    const authURL = `https://accounts.spotify.com/authorize?client_id=${CLIENT_ID}&response_type=code&redirect_uri=${REDIRECT_URI}&scope=${scopes.join('%20')}`;
     
     window.location.href = authURL;
   };

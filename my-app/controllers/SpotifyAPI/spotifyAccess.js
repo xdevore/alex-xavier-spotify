@@ -27,9 +27,7 @@ exports.getToken = async (req, res) => {
 };
 
 exports.fetchUserProfile = async (req, res) => {
-    console.log("made it to access");
     const accessToken = req.body.accessToken;
-    console.log(accessToken);
     try {
         const response = await axios({
             method: "GET",
@@ -51,21 +49,26 @@ exports.fetchUserProfile = async (req, res) => {
 };
 
 exports.getRecentlyPlayedSongIds = async (req, res) => {
+    const accessToken = req.body.accessToken;
+    const afterTimestamp = req.body.afterTimestamp;
+    // add in to url for after timestamp 
+    // &after=${afterTimestamp}
     try {
         const response = await axios({
-            method: 'post',
-            url: 'https://api.spotify.com/v1/me/player/recently-played',
-            data: `grant_type=authorization_code&code=${authCode}&redirect_uri=http://localhost:3000/login`,
+            url: `https://api.spotify.com/v1/me/player/recently-played?limit=50`,
             headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-                'Authorization': 'Basic ' + (new Buffer(CLIENT_ID + ':' + CLIENT_SECRET).toString('base64'))
+                Authorization: `Bearer ${accessToken}`
             },
         });
-        console.log("this runs")
-        const accessToken = response.data.access_token;
-        res.json({ access_token: accessToken });
+        console.log("this runs");
+        console.log("THIS IS THE RESPONSE");
+        var songDataList = response.data.items;
+        const recentlyPlayedSongIds = [];
+        for (var i = 0; i < songDataList.length; i++){
+            recentlyPlayedSongIds.push(songDataList[i].track.id);
+        }
+        res.json({ recentlyPlayedSongIds: recentlyPlayedSongIds });
         
-
     } catch (error) {
         console.error('Error fetching the recently played songs from Spotify:', error.response ? error.response.data : error.message);
         res.status(500).send('Error fetching the recently played songs from Spotify');

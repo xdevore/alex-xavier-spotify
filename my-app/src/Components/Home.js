@@ -23,17 +23,11 @@ function Home() {
   // console.log(makeMonth);
   // console.log(Time.splitRangeIntoSubRanges(makeMonth[1],'month'));
   
-
   return (
     <Container>
       <Row className="align-items-center" style={{height:"100px"}}>
         <Col>
-          {username && <p style={{ margin:50, fontSize: '40px', fontFamily: "Times New Roman, serif" }}><center>Welcome, {userDisplayName}</center></p>}
-        </Col>
-      </Row>
-      <Row className="justify-content-md-center">
-        <Col>
-          {accessToken && <p style={{ fontFamily: "Times New Roman, serif" }}><center>Your Access Token: {accessToken}</center></p>}
+          {userDisplayName && <p style={{ margin:50, fontSize: '40px', fontFamily: "Times New Roman, serif" }}><center>Welcome, {userDisplayName}</center></p>}
         </Col>
       </Row>
       <Row className="justify-content-md-center">
@@ -43,7 +37,7 @@ function Home() {
       </Row>
       <Row className="justify-content-md-center">
         <Col>
-          <RefreshButton userId={userId} />
+          <RefreshButton userId={userId} accessToken={accessToken} />
         </Col>
       </Row>
     </Container>
@@ -51,7 +45,7 @@ function Home() {
 }
 
 export default Home;
-//make sure all bars are loaded in order
+// make sure all bars are loaded in order
 // const handleOperationsInOrder = async () => {
 //   const promises = items.map(item => asyncOperation(item));
 //   const results = await Promise.all(promises);
