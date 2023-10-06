@@ -6,4 +6,6 @@ router.post('/get-token', spotifyController.getToken);
 
 router.post('/fetch-user-profile', spotifyController.fetchUserProfile);
 
+router.post('/get-recently-played-song-ids', spotifyController.getRecentlyPlayedSongIds);
+
 module.exports = router;
