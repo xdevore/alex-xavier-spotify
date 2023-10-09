@@ -20,45 +20,49 @@ function moveRange(range, unit, direction) {
       start: start.valueOf(),
       end: end.valueOf()
     };
-  }
-  
-  function splitRangeIntoSubRanges(range, unit) {
+}
+
+function splitRangeIntoSubRanges(range, unit) {
     const lengthMap = {
         year: 12,
         month: moment(range.start).daysInMonth()
     };
     const length = lengthMap[unit];
-    let move
+    let move;
     if (unit == 'year'){
-        move = 'month'
-    } else {move = 'day'};
-    
-    return Array.from({ length }).map((_, index) => {
+        move = 'month';
+    } else {
+        move = 'day';
+    }
+
+    let result = [];
+    for (let index = 0; index < length; index++) {
         const start = moment(range.start).add(index, move);
         const end = start.clone().add(1, move);
 
         let name;
         if (unit === 'month') {
-            name = index + 1; 
+            name = moment(start).format('DD'); 
         } else if (unit === 'year') {
-            name = moment().month(index).format('MMMM'); 
+            name = moment(start).format('MMMM');
         }
 
-        return {
+        result.push({
             start: start.valueOf(),
             end: end.valueOf(),
             name: name,
-            numSongs:index
-        };
-    });
+            numSongs: index
+        });
+    }
+    return result;
 }
 
 module.exports = {
   getCurrentYearRange,
   splitRangeIntoSubRanges,
   moveRange
-
 };
+
 
 // const [ranges, setRanges] = useState([...]);  // Your state definition
 

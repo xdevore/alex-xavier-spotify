@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from "react";
 import axios from 'axios';
 
+
 function refreshButton(props) {
 
     const handleButtonClick = () => {
@@ -15,7 +16,14 @@ function refreshButton(props) {
         try {
           const res = await axios.post(`http://localhost:6969/spotify/get-recently-played-song-ids`, { accessToken: accessToken });
           const recentlyPlayedSongIds = res.data.recentlyPlayedSongIds;
+
           console.log(recentlyPlayedSongIds);
+        //   await axios.post('http://localhost:6969/api/songs/', {
+        //     userId: props.userId,  
+        //     songIds: recentlyPlayedSongIds
+        
+        // });
+
         } catch (error) {
             console.error("Error getting recently played songs", error);
         }
