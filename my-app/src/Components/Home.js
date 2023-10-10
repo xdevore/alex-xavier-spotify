@@ -5,9 +5,10 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 
 import RefreshButton from './refreshButton';
-import SearchBar from './searchBar'
+import ArtistSearchBar from './artistSearchbar';
 //import Time from './barChart/time'
 import BarChart from './barChart/barHolder';
+import TrackSearchBar from "./trackSearchbar";
 
 
 function Home() {
@@ -30,12 +31,21 @@ function Home() {
           { <p style={{ margin:50, fontSize: '40px', fontFamily: "Times New Roman, serif" }}><center>Welcome, {userId}</center></p>}
         </Col>
       </Row>
-      <Row className="justify-content-md-center">
+      <Row className="justify-content-md-center" style={{ margin:50 }}>
         <Col>
-          {accessToken && <p style={{ fontFamily: "Times New Roman, serif" }}><center>Your Access Token: {accessToken}</center></p>}
+          <ArtistSearchBar
+            accessToken={accessToken}
+          >
+          </ArtistSearchBar>
+        </Col>
+        <Col>
+          <TrackSearchBar
+            accessToken={accessToken}
+          >
+          </TrackSearchBar>
         </Col>
       </Row>
-      <Row className="justify-content-md-center">
+      <Row className="justify-content-md-center" style={{margin:"40px"}}>
         <Col>
           <BarChart />
         </Col>
@@ -43,6 +53,11 @@ function Home() {
       <Row className="justify-content-md-center">
         <Col>
           <RefreshButton userId={userId} accessToken={accessToken} />
+        </Col>
+      </Row>
+      <Row className="justify-content-md-center">
+        <Col>
+          <p>Listened Near:</p>
         </Col>
       </Row>
     </Container>
