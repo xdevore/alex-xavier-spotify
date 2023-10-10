@@ -76,6 +76,7 @@ exports.getRecentlyPlayedSongIds = async (req, res) => {
         res.json({ recentlyPlayedSongIds: recentlyPlayedSongIds });
         
     } catch (error) {
+        console.error('Error fetching from Spotify:', error.response.data);
         console.error('Error fetching the recently played songs from Spotify:', error.response ? error.response.data : error.message);
         res.status(500).send('Error fetching the recently played songs from Spotify');
     }

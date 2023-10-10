@@ -51,7 +51,9 @@ function splitRangeIntoSubRanges(range, unit) {
             start: start.valueOf(),
             end: end.valueOf(),
             name: name,
-            numSongs: index
+            numSongs: index,
+            opacity: index/(index+5)
+          
         });
     }
     return result;

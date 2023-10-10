@@ -18,11 +18,17 @@ function refreshButton(props) {
           const recentlyPlayedSongIds = res.data.recentlyPlayedSongIds;
 
           console.log(recentlyPlayedSongIds);
-        //   await axios.post('http://localhost:6969/api/songs/', {
-        //     userId: props.userId,  
-        //     songIds: recentlyPlayedSongIds
-        
-        // });
+          const data = {
+            userId: props.userId,
+            songs: recentlyPlayedSongIds
+        };
+          try {
+            
+            const response = await axios.post('http://localhost:6969/api/songs/', data);
+            console.log('Songs added successfully:', response.data);
+          } catch (error) {
+            console.error('Error adding songs:', error);
+          }
 
         } catch (error) {
             console.error("Error getting recently played songs", error);

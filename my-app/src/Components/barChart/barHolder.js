@@ -58,26 +58,33 @@ const moment = require('moment');
     }
     function moveLR(direction){
         if (timeState.year){
-            setYear(Time.moveRange(year, 'year', direction))
-            setTimeFrame(Time.splitRangeIntoSubRanges(year,'year'))}
-        else if (timeState.month){
-            setMonth(Time.moveRange(month, 'month', direction))
-            setTimeFrame(Time.splitRangeIntoSubRanges(month,'month'))}
-        else{
-            setDay(Time.moveRange(day, 'day', direction))
-            setTimeFrame(Time.splitRangeIntoSubRanges(day,'day'))}
+            const newYear = Time.moveRange(year, 'year', direction);
+            setYear(newYear);
+            setTimeFrame(Time.splitRangeIntoSubRanges(newYear,'year'));
         }
-
-
-const timeLabel = () => {
-    if (timeState.year) {
-        return moment(year.start).format('YYYY');
-    } else if (timeState.month) {
-        return moment(month.start).format('MMMM YYYY');
-    } else if (timeState.day) {
-        return moment(day.start).format('MMMM DD, YYYY');
+        else if (timeState.month){
+            const newMonth = Time.moveRange(month, 'month', direction);
+            setMonth(newMonth);
+            setTimeFrame(Time.splitRangeIntoSubRanges(newMonth,'month'));
+        }
+        else{
+            const newDay = Time.moveRange(day, 'day', direction);
+            setDay(newDay);
+            setTimeFrame(Time.splitRangeIntoSubRanges(newDay,'day'));
+        }
     }
-};
+    
+
+
+    const timeLabel = () => {
+        if (timeState.year) {
+            return moment(year.start).format('YYYY');
+        } else if (timeState.month) {
+            return moment(month.start).format('MMMM YYYY');
+        } else if (timeState.day) {
+            return moment(day.start).format('MMMM DD, YYYY');
+        }
+    };
 
         
 
@@ -101,7 +108,7 @@ const timeLabel = () => {
             <XAxis dataKey="name" angle={-30} fontSize={12} />
             <YAxis />
             <Tooltip />
-            <Bar dataKey="numSongs" fill="#8884d8" onClick={(data) => moveDown(data)} />
+            <Bar dataKey="numSongs" fill={data => `rgba(136, 132, 216, ${data.opacity})`} onClick={(data) => moveDown(data)} />
             <Text x={875 / 2} y={30} textAnchor="middle" fill="#000" fontSize={24} fontWeight="bold">Chart Name</Text>
           </BarChart>
          

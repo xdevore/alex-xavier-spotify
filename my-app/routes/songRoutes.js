@@ -5,7 +5,7 @@ router.route("/")
   .post(songController.addSongs);
 
 
-router.route("/:userId/")
+  router.route("/:userId/:start/:end")
   .get(songController.getSongs);
 
 module.exports = router;
