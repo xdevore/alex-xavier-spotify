@@ -2,6 +2,10 @@ const axios = require('axios');
 const CLIENT_ID = 'f96c84ccf962498b8499d78509c90ebf';
 const CLIENT_SECRET = 'b71ec3ea5e174d2daf3653d02fe9a620';
 
+
+
+
+
 exports.getToken = async (req, res) => {
     const authCode = req.body.code;
     console.log("first this runs")
@@ -18,13 +22,12 @@ exports.getToken = async (req, res) => {
         console.log("this runs")
         const accessToken = response.data.access_token;
         res.json({ access_token: accessToken });
-        
-
     } catch (error) {
         console.error('Error fetching the Spotify access token:', error.response ? error.response.data : error.message);
         res.status(500).send('Error fetching the Spotify access token.');
     }
 };
+
 
 exports.fetchUserProfile = async (req, res) => {
     const accessToken = req.body.accessToken;
@@ -66,11 +69,15 @@ exports.getRecentlyPlayedSongIds = async (req, res) => {
         var songDataList = response.data.items;
         const recentlyPlayedSongIds = [];
         for (var i = 0; i < songDataList.length; i++){
-            recentlyPlayedSongIds.push(songDataList[i].track.id);
+            recentlyPlayedSongIds.push({
+                songId: songDataList[i].track.id,
+                timestamp: new Date(songDataList[i].played_at).getTime() 
+            });
         }
         res.json({ recentlyPlayedSongIds: recentlyPlayedSongIds });
         
     } catch (error) {
+        console.error('Error fetching from Spotify:', error.response.data);
         console.error('Error fetching the recently played songs from Spotify:', error.response ? error.response.data : error.message);
         res.status(500).send('Error fetching the recently played songs from Spotify');
     }

@@ -1,26 +1,47 @@
 const Song = require('../models/songModel.js');
+const User = require('../models/userModel.js');
 
-exports.addSong = async (req, res) => {
-  try {
-    const { userId, songId } = req.body;
-    if (!userId || !songId) return res.status(400).send('userId and songId are required');
-    
-    const song = new Song({ userId, songId });
-    await song.save();
-    
-    res.status(201).send(song);
-  } catch (error) {
-    res.status(500).send(error);
-  }
+exports.addSongs = async (req, res) => {
+    try {
+        const { userId, songs } = req.body;
+
+        const user = await User.findOne({ userId });
+        
+        if (!user) {
+            return res.status(404).send({message: 'user doesnt exist'});
+        }
+        
+        songs.forEach(song => {
+            user.songs.push(song);
+        });
+
+        await user.save();
+
+        res.status(201).send(user.songs);
+    } catch (error) {
+        console.error("cant add songs");
+        res.status(500).send({ message: error.message });
+    }
 };
 
-exports.getSongsByUserId = async (req, res) => {
-  try {
-    const userId = req.params.userId;
-    const songs = await Song.find({ userId });
-    
-    res.status(200).send(songs);
-  } catch (error) {
-    res.status(500).send(error);
-  }
+exports.getSongs = async (req, res) => {
+    try {
+        const { userId, start, end } = req.query;
+
+        const startTime = Number(start);
+        const endTime = Number(end);
+
+        const user = await User.findOne({ userId });
+
+        if (!user) {
+            return res.status(404).send({message: 'user doesnt exist'});
+        }
+
+        const filteredSongs = user.songs.filter(song => song.timestamp >= startTime && song.timestamp <= endTime);
+
+        res.status(200).send(filteredSongs);
+    } catch (error) {
+        console.error("Trouble getting songs");
+        res.status(500).send({ message: error.message });
+    }
 };

@@ -5,7 +5,7 @@ const User = require('../models/userModel.js');
 
 exports.addUser = async (req, res) => {
     try {
-        console.log("Adding user");
+        console.log("User add");
         
         
         const existingUser = await User.findOne({ userId: req.body.userId });
@@ -21,7 +21,7 @@ exports.addUser = async (req, res) => {
 
         res.status(201).send(newUser);
     } catch (error) {
-        console.error("Error in addUser:", error);
+        console.error("Error adding suer");
         res.status(400).send({ message: error.message });
     }
 };
@@ -39,6 +39,7 @@ exports.updateTime = async (req, res) => {
 
         res.status(200).send(user);
     } catch (error) {
+        console.log("error updating the time")
         res.status(400).send({ message: error.message });
     }
 };
@@ -47,12 +48,12 @@ exports.updateTime = async (req, res) => {
 exports.getTime = async (req, res) => {
     try {
         const user = await User.findOne({ userId: req.params.userId });
-        if (!user) {
-            return res.status(404).send({ message: 'User not found' });
+        if (!user){
+            res.status(404).send({message: 'user doesnt exist'})
         }
-
         res.status(200).send({ lastPull: user.lastPull });
     } catch (error) {
+        console.log("error getting a time")
         res.status(400).send({ message: error.message });
     }
 };

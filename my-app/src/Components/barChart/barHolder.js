@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { BarChart, XAxis, YAxis, Tooltip, Bar, Cell, Text } from 'recharts';
 
 import { Button, Card, Row, Col } from 'react-bootstrap';
+const moment = require('moment');
 
 
   
@@ -57,19 +58,43 @@ import { Button, Card, Row, Col } from 'react-bootstrap';
     }
     function moveLR(direction){
         if (timeState.year){
-            setYear(Time.moveRange(year, 'year', direction))
-            setTimeFrame(Time.splitRangeIntoSubRanges(year,'year'))}
-        else if (timeState.month){
-            setMonth(Time.moveRange(month, 'month', direction))
-            setTimeFrame(Time.splitRangeIntoSubRanges(month,'month'))}
-        else{
-            setDay(Time.moveRange(day, 'day', direction))
-            setTimeFrame(Time.splitRangeIntoSubRanges(day,'day'))}
+            const newYear = Time.moveRange(year, 'year', direction);
+            setYear(newYear);
+            setTimeFrame(Time.splitRangeIntoSubRanges(newYear,'year'));
         }
+        else if (timeState.month){
+            const newMonth = Time.moveRange(month, 'month', direction);
+            setMonth(newMonth);
+            setTimeFrame(Time.splitRangeIntoSubRanges(newMonth,'month'));
+        }
+        else{
+            const newDay = Time.moveRange(day, 'day', direction);
+            setDay(newDay);
+            setTimeFrame(Time.splitRangeIntoSubRanges(newDay,'day'));
+        }
+    }
+    
+
+
+    const timeLabel = () => {
+        if (timeState.year) {
+            return moment(year.start).format('YYYY');
+        } else if (timeState.month) {
+            return moment(month.start).format('MMMM YYYY');
+        } else if (timeState.day) {
+            return moment(day.start).format('MMMM DD, YYYY');
+        }
+    };
+
         
 
       return(
         <Card style={{ backgroundColor: 'darkgrey', padding: '20px' }}>
+            <Row className="mb-3">
+        <Col xs={12} className="text-center">
+            <h3>{timeLabel()}</h3>
+        </Col>
+    </Row>
       <Row className="mb-3">
         <Col xs={2}>
           <Button variant="primary" onClick={() =>moveUp()}>
@@ -83,7 +108,7 @@ import { Button, Card, Row, Col } from 'react-bootstrap';
             <XAxis dataKey="name" angle={-30} fontSize={12} />
             <YAxis />
             <Tooltip />
-            <Bar dataKey="numSongs" fill="#8884d8" onClick={(data) => moveDown(data)} />
+            <Bar dataKey="numSongs" fill={data => `rgba(136, 132, 216, ${data.opacity})`} onClick={(data) => moveDown(data)} />
             <Text x={875 / 2} y={30} textAnchor="middle" fill="#000" fontSize={24} fontWeight="bold">Chart Name</Text>
           </BarChart>
          
@@ -92,12 +117,12 @@ import { Button, Card, Row, Col } from 'react-bootstrap';
       <Row className="text-center">
         <Col xs={5}>
           <Button variant="primary" className="mr-2" onClick={() =>moveLR('forward')}>
-            <i className="bi bi-arrow-left"></i> Previous
+            <i className="bi bi-arrow-left"></i> Next
           </Button>
         </Col>
         <Col xs={5}>
           <Button variant="primary" className="ml-2" onClick={() =>moveLR('backward')}>
-            Next <i className="bi bi-arrow-right"></i>
+            Prev <i className="bi bi-arrow-right"></i>
           </Button>
         </Col>
       </Row>
