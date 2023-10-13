@@ -37,7 +37,7 @@ function Home() {
       </Row>
       <Row className="justify-content-md-center">
         <Col>
-          <BarChart />
+          <BarChart userId={userId}/>
         </Col>
       </Row>
       <Row className="justify-content-md-center">

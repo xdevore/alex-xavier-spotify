@@ -18,7 +18,10 @@ function moveRange(range, unit, direction) {
     const end = moment(range.end).add(factor, unit);
     return {
       start: start.valueOf(),
-      end: end.valueOf()
+      end: end.valueOf(),
+      name: "",
+        numSongs: 0,
+        opacity: 1
     };
 }
 
@@ -51,7 +54,7 @@ function splitRangeIntoSubRanges(range, unit) {
             start: start.valueOf(),
             end: end.valueOf(),
             name: name,
-            numSongs: index,
+            numSongs: 0,
             opacity: index/(index+5)
           
         });

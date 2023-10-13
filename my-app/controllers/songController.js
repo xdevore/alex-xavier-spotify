@@ -26,7 +26,7 @@ exports.addSongs = async (req, res) => {
 
 exports.getSongs = async (req, res) => {
     try {
-        const { userId, start, end } = req.query;
+        const { userId, start, end } = req.params;
 
         const startTime = Number(start);
         const endTime = Number(end);

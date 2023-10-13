@@ -1,13 +1,15 @@
 import Time from './time'
 import React, { useEffect, useState } from 'react';
 import { BarChart, XAxis, YAxis, Tooltip, Bar, Cell, Text } from 'recharts';
-
+import axios from 'axios';
+import batch from './batchCounter';
 import { Button, Card, Row, Col } from 'react-bootstrap';
+import SongList from './songList';
 const moment = require('moment');
 
 
   
-  function BarHolder() {
+  function BarHolder(props) {
     const [year, setYear] = useState(Time.getCurrentYearRange());
     const [month, setMonth] = useState({});
     const [day, setDay] = useState({});
@@ -20,10 +22,46 @@ const moment = require('moment');
         month: false,
         day: false
       });
-      useEffect(()=>{
-        //some action choosing day, month or year vals
-        //Id axios call with start end of current
-      }, [timeState])
+
+      const [songData, setSongData] = useState([])
+
+      useEffect(() => {
+        async function fetchSongs(userId, start, end) {
+            
+            try {
+                const response = await axios.get(`http://localhost:6969/api/songs/${userId}/${start}/${end}`);
+                if (response.status === 200) {
+                    console.log("Yay it workkd?",response.data);
+                }
+                var copy = [...timeFrame]
+                batch.userCount(response.data,copy)
+                setTimeFrame(copy);
+                setSongData(response.data)
+
+                
+
+            } catch (error) {
+                console.error("Error fetching songs:", error);
+            }
+        }
+        var start;
+        var end;
+        if (timeState.year){
+            start = year.start
+            end = year.end
+        }
+        else if (timeState.month){
+            start = month.start
+            end = month.end
+        }
+        else{
+            start = day.start
+            end = day.end
+            
+        }
+        fetchSongs(props.userId, start, end);
+
+    }, [timeState]);
     
       const setTimePeriod = (period) => {
         setTimeState({
@@ -36,6 +74,7 @@ const moment = require('moment');
           console.log(split)
           if (timeState.year){
             setMonth(split)
+           
             setTimePeriod('month')
             setTimeFrame(Time.splitRangeIntoSubRanges(split, 'month'))
           }
@@ -59,16 +98,19 @@ const moment = require('moment');
     function moveLR(direction){
         if (timeState.year){
             const newYear = Time.moveRange(year, 'year', direction);
+            setTimePeriod('year')
             setYear(newYear);
             setTimeFrame(Time.splitRangeIntoSubRanges(newYear,'year'));
         }
         else if (timeState.month){
             const newMonth = Time.moveRange(month, 'month', direction);
+            setTimePeriod('month')
             setMonth(newMonth);
             setTimeFrame(Time.splitRangeIntoSubRanges(newMonth,'month'));
         }
         else{
             const newDay = Time.moveRange(day, 'day', direction);
+            setTimePeriod('day')
             setDay(newDay);
             setTimeFrame(Time.splitRangeIntoSubRanges(newDay,'day'));
         }
@@ -104,6 +146,9 @@ const moment = require('moment');
       </Row>
       <Row className="mb-3">
         <Col className="position-relative">
+
+            {console.log("fsadfdasdfdsadfsdfsadfas", timeState.day)}
+            {timeState.day ? <SongList songs={songData}/> :
           <BarChart width={875} height={400} data={timeFrame}>
             <XAxis dataKey="name" angle={-30} fontSize={12} />
             <YAxis />
@@ -111,6 +156,7 @@ const moment = require('moment');
             <Bar dataKey="numSongs" fill={data => `rgba(136, 132, 216, ${data.opacity})`} onClick={(data) => moveDown(data)} />
             <Text x={875 / 2} y={30} textAnchor="middle" fill="#000" fontSize={24} fontWeight="bold">Chart Name</Text>
           </BarChart>
+  }
          
         </Col>
       </Row>
