@@ -8,4 +8,6 @@ router.post('/fetch-user-profile', spotifyController.fetchUserProfile);
 
 router.post('/get-recently-played-song-ids', spotifyController.getRecentlyPlayedSongIds);
 
+router.post('/search-track', spotifyController.searchTrack);
+
 module.exports = router;

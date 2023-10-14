@@ -5,6 +5,7 @@ import axios from 'axios';
 import batch from './batchCounter';
 import { Button, Card, Row, Col } from 'react-bootstrap';
 import SongList from './songList';
+import './barHolder.css';
 const moment = require('moment');
 
 
@@ -139,7 +140,7 @@ const moment = require('moment');
     </Row>
       <Row className="mb-3">
         <Col xs={2}>
-          <Button variant="primary" onClick={() =>moveUp()}>
+          <Button variant="primary spotify-green-button" onClick={() =>moveUp()}>
             <i className="bi bi-arrow-left">Back</i>
           </Button>
         </Col>
@@ -147,7 +148,7 @@ const moment = require('moment');
       <Row className="mb-3">
         <Col className="position-relative">
 
-            {console.log("fsadfdasdfdsadfsdfsadfas", timeState.day)}
+           
             {timeState.day ? <SongList songs={songData}/> :
           <BarChart width={875} height={400} data={timeFrame}>
             <XAxis dataKey="name" angle={-30} fontSize={12} />
@@ -162,13 +163,13 @@ const moment = require('moment');
       </Row>
       <Row className="text-center">
         <Col xs={5}>
-          <Button variant="primary" className="mr-2" onClick={() =>moveLR('forward')}>
-            <i className="bi bi-arrow-left"></i> Next
+          <Button variant="primary" className="mr-2 spotify-green-button" onClick={() =>moveLR('backwards')}>
+            <i className="bi bi-arrow-left"></i> Prev
           </Button>
         </Col>
         <Col xs={5}>
-          <Button variant="primary" className="ml-2" onClick={() =>moveLR('backward')}>
-            Prev <i className="bi bi-arrow-right"></i>
+          <Button variant="primary" className="ml-2 spotify-green-button" onClick={() =>moveLR('forward')}>
+            Next <i className="bi bi-arrow-right"></i>
           </Button>
         </Col>
       </Row>

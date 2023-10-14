@@ -58,6 +58,7 @@ exports.getRecentlyPlayedSongIds = async (req, res) => {
     // &after=${afterTimestamp}
     try {
         const response = await axios({
+            method: "GET",
             url: `https://api.spotify.com/v1/me/player/recently-played?limit=50`,
             headers: {
                 Authorization: `Bearer ${accessToken}`
@@ -79,5 +80,31 @@ exports.getRecentlyPlayedSongIds = async (req, res) => {
         console.error('Error fetching from Spotify:', error.response.data);
         console.error('Error fetching the recently played songs from Spotify:', error.response ? error.response.data : error.message);
         res.status(500).send('Error fetching the recently played songs from Spotify');
+    }
+};
+
+exports.searchTrack = async (req, res) => {
+    const accessToken = req.body.accessToken;
+    const searchKey = req.body.searchKey;
+
+    try {
+        const response = await axios({
+            method: "GET",
+            url: `https://api.spotify.com/v1/search`,
+            headers: {
+                Authorization: `Bearer ${accessToken}`
+            },
+            params: {
+                q: searchKey,
+                type: "track"
+            }
+        });
+        console.log("the search track call runs");
+        console.log(response.data.tracks.items);
+        res.json({ tracks: response.data.tracks.items})
+        
+    } catch (error) {
+        console.error('Error searching song on Spotify', error.response ? error.response.data : error.message);
+        res.status(500).send('Error searching song on Spotify');
     }
 };
