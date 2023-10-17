@@ -12,6 +12,11 @@ function TrackSearchBar(props) {
 
   const accessToken = props.accessToken;
 
+  function sendId(id){
+    props.onIdChange(id)
+  }
+
+
   async function searchTrack() {
     try {
       const res = await axios.post(`http://localhost:6969/spotify/search-track`, {
@@ -43,12 +48,16 @@ function TrackSearchBar(props) {
       {tracks.length > 0 && (
         <Card style={{ maxHeight: "300px", overflowY: "auto" }}>
             <ListGroup>
-            {tracks.map((track) => (
-                <ListGroup.Item>
-                {track.name}
-                {track.artist}
-                </ListGroup.Item>
-            ))}
+                {tracks.map((track) => (
+                    <ListGroup.Item 
+                        key={track.id} 
+                        onClick={() => sendId(track.id)} 
+                        style={{cursor: "pointer"}}>
+                        {track.name}
+                        <br/>
+                        {track.artist}
+                    </ListGroup.Item>
+                ))}
             </ListGroup>
         </Card>
       )}

@@ -16,6 +16,8 @@ const moment = require('moment');
     const [day, setDay] = useState({});
 
     const [timeFrame, setTimeFrame]= useState(Time.splitRangeIntoSubRanges(year,'year'))
+
+    const [songInfo, setSongInfo]=useState({})
      
 
     const [timeState, setTimeState] = useState({
@@ -28,6 +30,7 @@ const moment = require('moment');
 
       useEffect(() => {
         async function fetchSongs(userId, start, end) {
+          console.log("Fetching songs from", start, "to", end)
             
             try {
                 const response = await axios.get(`http://localhost:6969/api/songs/${userId}/${start}/${end}`);
@@ -63,6 +66,19 @@ const moment = require('moment');
         fetchSongs(props.userId, start, end);
 
     }, [timeState]);
+
+    useEffect (()=> {
+      console.log(props.searchId);
+      var copy = [...timeFrame]
+     
+      batch.resetOpacity(copy)
+
+      if (props.searchId != ""){
+        console.log("MY SPNG DATA", songData);
+        batch.idCount(props.searchId,songData,copy);
+        }
+      setTimeFrame(copy);
+    }, [props.searchId,songData]);
     
       const setTimePeriod = (period) => {
         setTimeState({
@@ -75,13 +91,13 @@ const moment = require('moment');
           console.log(split)
           if (timeState.year){
             setMonth(split)
-           
             setTimePeriod('month')
             setTimeFrame(Time.splitRangeIntoSubRanges(split, 'month'))
           }
           if (timeState.month){
             setDay(split)
             setTimePeriod('day')
+            //setTimeFrame(Time.splitRangeIntoSubRanges(split, 'day'))
           }
           console.log(month);
       }

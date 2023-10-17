@@ -27,7 +27,9 @@ function Login() {
 
   async function fetchAccessToken(code) {
     try {
+      console.log(code)
         const res = await axios.post(`http://localhost:6969/spotify/get-token`, { code: code });
+        console.log("got the response", res.data.access_token)
         const fetchedToken = res.data.access_token;
         localStorage.setItem("spotify_access_token", fetchedToken);
         
@@ -43,7 +45,7 @@ function Login() {
         navigate("/home", { state: { accessToken: fetchedToken, userDisplayName: userDisplayName, userId: userId } });
         
     } catch (err) {
-        console.log(err);
+        console.log("fuggggg", err);
     }
 }
 
@@ -60,7 +62,7 @@ function Login() {
   }
 
   const redirectToSpotify = () => {
-    const CLIENT_ID = 'f96c84ccf962498b8499d78509c90ebf';
+    const CLIENT_ID = '144e7866c95e4f018ee8ff57b0149d23';
     const REDIRECT_URI = 'http://localhost:3000/login'; 
     const scopes = ['user-top-read', 'user-read-recently-played']; 
     
