@@ -12,6 +12,7 @@ function TrackSearchBar(props) {
   const [showTracklist, setShowTracklist] = useState(false);
 
   const accessToken = props.accessToken;
+
   const tracklistRef = useRef(null);
 
   useEffect(() => {
@@ -59,6 +60,7 @@ function TrackSearchBar(props) {
   function selectTrack(trackId) {
     setSelectedTrackId(trackId);
     setShowTracklist(false);
+    props.onIdChange(trackId);
   }
 
   return (
@@ -79,7 +81,11 @@ function TrackSearchBar(props) {
               ref={tracklistRef}>
             <ListGroup>
             {tracks.map((track) => (
-                <ListGroup.Item action key={track.id} onClick={() => selectTrack(track.id)}>
+                <ListGroup.Item 
+                  action 
+                  key={track.id} 
+                  onClick={() => selectTrack(track.id)}
+                  style={{cursor: "pointer"}}>
                   <p>{track.name}</p>
                   <p>{displayArtists(track.artists)}</p>
                 </ListGroup.Item>

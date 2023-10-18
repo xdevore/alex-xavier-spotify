@@ -31,11 +31,13 @@ exports.idCount = (id, songs, timeSplits) => {
     let maxCount = 0;
 
     for (let song of songs) {
-        if (song.userId !== id) continue;
+        if (song.songId !== id) continue;
         let val = 0;
-        const current = song.timestamps;
-        while (val < timeSplits.length && current <= timeSplits[val].start) {
+        const current = song.timestamp;
+        while (val < timeSplits.length && current > timeSplits[val].start) {
             val++;
+            
+            
         }
 
         if (val != 0 && val != timeSplits.length) {
@@ -53,6 +55,13 @@ exports.idCount = (id, songs, timeSplits) => {
         }
     }
 };
+
+exports.resetOpacity = (timeSplits)=>{
+    for (let ts of timeSplits) {
+            ts.opacity = 1;
+        }
+    }
+
 
 
 

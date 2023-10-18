@@ -17,6 +17,13 @@ function Home() {
   const userDisplayName = location.state ? location.state.userDisplayName : null;
   const userId = location.state ? location.state.userId : null;
 
+  const [searchId, setSearchId] = useState('');
+
+  const handleFindId = (value) => {
+    setSearchId(value);
+    
+    }
+
   // const test = Time.getCurrentYearRange();
   // console.log(test);
   // console.log(Time.moveRange(test, 'year', 'back'));
@@ -35,19 +42,22 @@ function Home() {
         <Col>
           <ArtistSearchBar
             accessToken={accessToken}
+            
           >
           </ArtistSearchBar>
         </Col>
         <Col>
           <TrackSearchBar
+            onIdChange = {handleFindId}
             accessToken={accessToken}
           >
           </TrackSearchBar>
+          <button onClick={()=> setSearchId('')}>Clear</button>
         </Col>
       </Row>
       <Row className="justify-content-md-center" style={{margin:"40px"}}>
         <Col>
-          <BarChart userId={userId}/>
+          <BarChart userId={userId} searchId = {searchId}/>
         </Col>
       </Row>
       <Row className="justify-content-md-center">
