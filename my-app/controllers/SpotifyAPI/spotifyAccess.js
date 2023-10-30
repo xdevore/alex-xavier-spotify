@@ -1,6 +1,8 @@
 const axios = require('axios');
-const CLIENT_ID = '144e7866c95e4f018ee8ff57b0149d23';
-const CLIENT_SECRET = '9cc4ff2e4ca84210854fa75071866db4';
+const CLIENT_ID = "144e7866c95e4f018ee8ff57b0149d23"
+//process.env.REACT_APP_SPOTIFY_CLIENT_ID;
+const CLIENT_SECRET = "9cc4ff2e4ca84210854fa75071866db4"
+//process.env.REACT_APP_SPOTIFY_SECRET_KEY;
 
 
 
@@ -52,33 +54,71 @@ exports.fetchUserProfile = async (req, res) => {
 };
 
 
+// gets chunks of artists from https://github.com/pavelkomarov/exportify/blob/master/exportify.js
 
-const unSeenTracks = async (data) => {
+
+
+const getAllArtistGenres = async (artist_ids, accessToken) => {
+    
+
+    
+    artist_ids = Array.from(artist_ids);
+    const artist_chunks = [];
+    while (artist_ids.length) {
+        artist_chunks.push(artist_ids.splice(0, 50));
+    }
+
+
+    const artists_promises = artist_chunks.map((chunk_ids) => 
+        axios.get(`https://api.spotify.com/v1/artists?ids=${chunk_ids.join(',')}`, {
+            headers: {
+                'Authorization': `Bearer ${accessToken}`
+            }
+        })
+    );
+
+    
+    const responses = await Promise.all(artists_promises);
+    let artist_genres = {};
+    responses.forEach(response => 
+        response.data.artists.forEach(artist => 
+            artist_genres[artist.id] = artist.genres
+        )
+    );
+    return artist_genres;
+};
+
+const unSeenTracks = async (data, accessToken) => {
     const songInfo = [];
+    const artist_ids = new Set(
+        data.flatMap(item => item.track.artists.map(artist => artist.id))
+      );
+    const allArtistGenres = await getAllArtistGenres(artist_ids, accessToken);
+   
+
     for (let i = 0; i < data.length; i++) {
         const track = data[i].track;
+        const genres = track.artists.map(artist => allArtistGenres[artist.id]).flat();
 
-        // Extract genres from the artist's data.
-        let allGenres = [];
-        track.artists.forEach(artist => {
-            allGenres = allGenres.concat(artist.genres);
-        });
+
 
         songInfo.push({
             songId: track.id,
             name: track.name,
-            artist: track.artists.map(a => a.name).join(', '), // Join all artist names.
-            genres: allGenres
+            artist: track.artists.map(a => a.name).join(', '), 
+            genres: genres
         });
     }
 
     try {
-        // Save songId, song name, song artist, and genres.
+
+       
+        
         const response = await axios.post('http://localhost:6969/api/seen/', { songs: songInfo });
     } catch (error) {
         console.error('Error adding unique songs to unseen songs db:', error);
     }
-}
+};
 
 exports.getRecentlyPlayedSongIds = async (req, res) => {
     const accessToken = req.body.accessToken;
@@ -107,7 +147,7 @@ exports.getRecentlyPlayedSongIds = async (req, res) => {
         //     console.error('Error:', error);
         // }
         var songDataList = response.data.items;
-        const add_this_ting = await unSeenTracks(songDataList)
+        const add_this_ting = await unSeenTracks(songDataList, accessToken)
         console.log("These are all of the added stuffs", add_this_ting)
        
         

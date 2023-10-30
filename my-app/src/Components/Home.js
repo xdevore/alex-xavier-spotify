@@ -5,10 +5,11 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 
 import RefreshButton from './refreshButton';
-import ArtistSearchBar from './artistSearchbar';
+import ArtistSearchBar from './SearchMechanism/artistSearchbar';
 //import Time from './barChart/time'
 import BarChart from './barChart/barHolder';
-import TrackSearchBar from "./trackSearchbar";
+import TrackSearchBar from "./SearchMechanism/trackSearchbar";
+import GenreDropdown from "./SearchMechanism/genreDropdown";
 
 
 function Home() {
@@ -18,18 +19,24 @@ function Home() {
   const userId = location.state ? location.state.userId : null;
 
   const [searchId, setSearchId] = useState('');
-
   const handleFindId = (value) => {
     setSearchId(value);
-    
     }
 
-  // const test = Time.getCurrentYearRange();
-  // console.log(test);
-  // console.log(Time.moveRange(test, 'year', 'back'));
-  // const makeMonth = Time.splitRangeIntoSubRanges(test,'year');
-  // console.log(makeMonth);
-  // console.log(Time.splitRangeIntoSubRanges(makeMonth[1],'month'));
+  const [genreDisplay, setGenreDisplay]= useState([]);
+  const handleGiveGenre = (value) => {
+    setGenreDisplay([...value]);
+    }
+
+  const [searchGenre, setSearchGenre] = useState([]);
+  const handleFindGenre = (value) => {
+    setSearchGenre(value);
+    }
+console.log(genreDisplay)
+
+  
+
+  
   
   return (
     <Container>
@@ -54,10 +61,18 @@ function Home() {
           </TrackSearchBar>
           <button onClick={()=> setSearchId('')}>Clear</button>
         </Col>
+        <Col>
+          <GenreDropdown
+            items = {searchGenre}
+            getGenre = {handleGiveGenre}
+          >
+          </GenreDropdown>
+          
+        </Col>
       </Row>
       <Row className="justify-content-md-center" style={{margin:"40px"}}>
         <Col>
-          <BarChart userId={userId} searchId = {searchId}/>
+          <BarChart userId={userId} searchId = {searchId} searchGenre = {genreDisplay} onGenreChange = {handleFindGenre}/>
         </Col>
       </Row>
       <Row className="justify-content-md-center">

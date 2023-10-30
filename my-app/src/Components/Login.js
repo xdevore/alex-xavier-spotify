@@ -62,9 +62,10 @@ function Login() {
   }
 
   const redirectToSpotify = () => {
-    const CLIENT_ID = '144e7866c95e4f018ee8ff57b0149d23';
+    const CLIENT_ID = "144e7866c95e4f018ee8ff57b0149d23"
+    //process.env.REACT_APP_SPOTIFY_CLIENT_ID;
     const REDIRECT_URI = 'http://localhost:3000/login'; 
-    const scopes = ['user-top-read', 'user-read-recently-played']; 
+    const scopes = ['user-top-read', 'user-read-recently-played', 'user-library-read', 'user-follow-read']; 
     
     const authURL = `https://accounts.spotify.com/authorize?client_id=${CLIENT_ID}&response_type=code&redirect_uri=${REDIRECT_URI}&scope=${scopes.join('%20')}`;
     

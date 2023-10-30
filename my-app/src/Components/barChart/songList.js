@@ -2,22 +2,14 @@ import React, { useEffect } from 'react';
 import axios from 'axios';
 
 function SongList(props) {
-  useEffect(() => {
-    const songsYeah = props.songs.map(song => song.songId);
-    axios.post('http://localhost:6969/api/seen/getSongs', { songIds: songsYeah })
-        .then(response => {
-            console.log("Success:", response.data);
-        })
-        .catch(error => {
-            console.error("Error:", error);
-        });
-  }, [props.songs]);  
+   console.log(props.dict)
 
   return (
-    <ul className="list-group">
+    <ul className="list-group" style={{ maxHeight: '450px', overflowY: 'auto' }}>
       {props.songs.map(song => (
-        <li key={song._Id} className="list-group-item">
-          {song.songId}
+        <li key={song._Id} className="list-group-item"
+        style={{ backgroundColor: song.songId === props.Id ? 'yellow' : 'transparent' }}>
+          {props.dict && props.dict[song.songId] ? props.dict[song.songId].name : "not in database my b"}
         </li>
       ))}
     </ul>

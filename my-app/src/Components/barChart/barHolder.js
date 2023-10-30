@@ -17,7 +17,7 @@ const moment = require('moment');
 
     const [timeFrame, setTimeFrame]= useState(Time.splitRangeIntoSubRanges(year,'year'))
 
-    const [songInfo, setSongInfo]=useState({})
+    const [songInfo, setSongInfo]=useState({}) //dictionary stuff probably should rename tbh
      
 
     const [timeState, setTimeState] = useState({
@@ -28,12 +28,15 @@ const moment = require('moment');
 
       const [songData, setSongData] = useState([])
 
+      // get new songs in a new time frame ----------------------------------------------------------------------------------
+
       useEffect(() => {
         async function fetchSongs(userId, start, end) {
           console.log("Fetching songs from", start, "to", end)
             
             try {
                 const response = await axios.get(`http://localhost:6969/api/songs/${userId}/${start}/${end}`);
+           
                 if (response.status === 200) {
                     console.log("Yay it workkd?",response.data);
                 }
@@ -48,37 +51,74 @@ const moment = require('moment');
                 console.error("Error fetching songs:", error);
             }
         }
-        var start;
-        var end;
-        if (timeState.year){
-            start = year.start
-            end = year.end
-        }
-        else if (timeState.month){
-            start = month.start
-            end = month.end
-        }
-        else{
-            start = day.start
-            end = day.end
-            
-        }
+          var start;
+          var end;
+          if (timeState.year){
+              start = year.start
+              end = year.end
+          }
+          else if (timeState.month){
+              start = month.start
+              end = month.end
+          }
+          else{
+              start = day.start
+              end = day.end
+              
+          }
         fetchSongs(props.userId, start, end);
 
     }, [timeState]);
 
+    //update song info that is available for the updated time frame ------------------------------------------------------
+
+    useEffect(() => {
+      async function fetchUniqueSongs() {
+      const songsYeah = songData.map(song => song.songId);
+        try {
+          console.log("IS THIS RUN TWICE")
+        const response = await axios.post('http://localhost:6969/api/seen/getSongs', { songIds: songsYeah });
+        const myGenres = new Set(response.data.map(song => song.genres ).flat())
+        props.onGenreChange(myGenres)
+        const songsDict = batch.uniqueSongsDict(response.data)
+        console.log("hard days work", songsDict)
+        setSongInfo(songsDict)
+        
+        
+        }
+        catch (error) {
+          console.error("Error loading unique songs:", error);
+        }
+    }
+    fetchUniqueSongs()
+          
+    }, [songData]); 
+
+
+//  update the opacity for song stuff ---------------------------------
     useEffect (()=> {
       console.log(props.searchId);
       var copy = [...timeFrame]
      
       batch.resetOpacity(copy)
+      console.log("WHAT EVEN IS THIS IN", props.searchGenre)
 
       if (props.searchId != ""){
-        console.log("MY SPNG DATA", songData);
-        batch.idCount(props.searchId,songData,copy);
+       
+        batch.idCount(props.searchId,songData,copy, "song");
         }
+
+      else if (props.searchGenre && props.searchGenre.length > 0) {
+        console.log("called on update",props.searchGenre)
+        console.log("song ids", songData)
+        console.log("Dictionary", songInfo)
+        
+        batch.idCount(props.searchGenre, songData, copy, "genre", songInfo)
+      }
       setTimeFrame(copy);
-    }, [props.searchId,songData]);
+    }, [props.searchId,songInfo, props.searchGenre]);
+
+    // extra time name stuff
     
       const setTimePeriod = (period) => {
         setTimeState({
@@ -87,6 +127,8 @@ const moment = require('moment');
           day: period === 'day'
         });
       };
+
+      // Time direction switch of day, month, year
       function moveDown(split){
           console.log(split)
           if (timeState.year){
@@ -148,7 +190,7 @@ const moment = require('moment');
         
 
       return(
-        <Card style={{ backgroundColor: 'darkgrey', padding: '20px' }}>
+        <Card style={{ backgroundColor: 'lightgrey', padding: '20px' }}>
             <Row className="mb-3">
         <Col xs={12} className="text-center">
             <h3>{timeLabel()}</h3>
@@ -165,7 +207,7 @@ const moment = require('moment');
         <Col className="position-relative">
 
            
-            {timeState.day ? <SongList songs={songData}/> :
+            {timeState.day ? <SongList songs={songData} dict ={songInfo} Id = {props.searchId}/> :
           <BarChart width={875} height={400} data={timeFrame}>
             <XAxis dataKey="name" angle={-30} fontSize={12} />
             <YAxis />

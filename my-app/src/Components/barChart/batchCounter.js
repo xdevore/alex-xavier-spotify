@@ -27,11 +27,18 @@ exports.userCount = (songs, timeSplits) => {
     }
 };
 
-exports.idCount = (id, songs, timeSplits) => {
+exports.idCount = (id, songs, timeSplits, type, dict = {}) => { //id is string or list depending on what is sent - should change name tbh
     let maxCount = 0;
 
     for (let song of songs) {
-        if (song.songId !== id) continue;
+       
+        if ((type == "song") && (song.songId !== id)) continue;
+      
+     
+        if (!(dict[song.songId] && dict[song.songId].genres)) continue;
+        
+   
+        if (!(dict[song.songId].genres.some(item => id.includes(item)))) continue;
         let val = 0;
         const current = song.timestamp;
         while (val < timeSplits.length && current > timeSplits[val].start) {
@@ -46,14 +53,16 @@ exports.idCount = (id, songs, timeSplits) => {
         }
     }
 
-    maxCount--;
-    for (let ts of timeSplits) {
-        if (ts.opacity && maxCount > 0) {
-            ts.opacity = (ts.opacity-1) / maxCount;
-        } else {
-            ts.opacity = 0;
-        }
+   
+    let logMax = Math.log(maxCount);  
+
+for (let ts of timeSplits) {
+    if (ts.opacity) {
+        ts.opacity = Math.log(ts.opacity) / logMax; 
+    } else {
+        ts.opacity = 0;
     }
+}
 };
 
 exports.resetOpacity = (timeSplits)=>{
@@ -61,6 +70,16 @@ exports.resetOpacity = (timeSplits)=>{
             ts.opacity = 1;
         }
     }
+
+exports.uniqueSongsDict = (uniqueSongs)=>{
+    const  songDict= {};
+
+    uniqueSongs.forEach(item => {
+        const { songId, ...restOfObject } = item;  
+        songDict[songId] = restOfObject;
+    });
+    return songDict
+}
 
 
 
