@@ -8,7 +8,8 @@ const userSchema = new mongoose.Schema({
     unique: true
   },
   lastPull: {
-    type: Number, 
+    type: Number,
+    default: 0,
     required: false
   },
   songs: [Song.schema]

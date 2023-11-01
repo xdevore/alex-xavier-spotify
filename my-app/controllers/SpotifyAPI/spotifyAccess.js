@@ -88,17 +88,57 @@ const getAllArtistGenres = async (artist_ids, accessToken) => {
     return artist_genres;
 };
 
+const getAllAudioFeatures = async (song_ids, accessToken) => {
+    const song_ids_array = [...song_ids];
+    try {
+        const response = await axios.get(`https://api.spotify.com/v1/audio-features?ids=${song_ids_array.join(",")}`, {
+            headers: {
+                'Authorization': `Bearer ${accessToken}`
+            }
+        });
+
+        let song_features = {};
+       
+
+        response.data.audio_features.forEach(feature => {
+            song_features[feature.id] = {
+                acousticness: feature.acousticness,
+                danceability: feature.danceability,
+                energy: feature.energy,
+                instrumentalness: feature.instrumentalness,
+                liveness: feature.liveness,
+                loudness: feature.loudness,
+                speechiness: feature.speechiness,
+                tempo: feature.tempo,
+                valence: feature.valence
+            };
+        });
+        console.log("LETS EEEEEEEE\n\n\n", song_features)
+
+        return song_features;
+    } catch (error) {
+        console.error("Error fetching audio features:", error);
+    }
+}
+
+
+
 const unSeenTracks = async (data, accessToken) => {
     const songInfo = [];
     const artist_ids = new Set(
         data.flatMap(item => item.track.artists.map(artist => artist.id))
       );
+    const song_ids = new Set(
+        data.map(item => item.track.id)
+      );
     const allArtistGenres = await getAllArtistGenres(artist_ids, accessToken);
+    const allSongFeatures = await getAllAudioFeatures(song_ids, accessToken)
    
 
     for (let i = 0; i < data.length; i++) {
         const track = data[i].track;
         const genres = track.artists.map(artist => allArtistGenres[artist.id]).flat();
+        const features = allSongFeatures[track.id]
 
 
 
@@ -106,7 +146,8 @@ const unSeenTracks = async (data, accessToken) => {
             songId: track.id,
             name: track.name,
             artist: track.artists.map(a => a.name).join(', '), 
-            genres: genres
+            genres: genres,
+            features: features
         });
     }
 

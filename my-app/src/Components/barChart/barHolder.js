@@ -6,15 +6,20 @@ import batch from './batchCounter';
 import { Button, Card, Row, Col } from 'react-bootstrap';
 import SongList from './songList';
 import './barHolder.css';
+import { getSummary } from '../openAI/genreSummary';
 const moment = require('moment');
 
 
   
   function BarHolder(props) {
+    
+
+    const [loading, setLoading] = useState(true);
+
     const [year, setYear] = useState(Time.getCurrentYearRange());
     const [month, setMonth] = useState({});
     const [day, setDay] = useState({});
-
+    const [songGenres, setSongGenres] = useState([])
     const [timeFrame, setTimeFrame]= useState(Time.splitRangeIntoSubRanges(year,'year'))
 
     const [songInfo, setSongInfo]=useState({}) //dictionary stuff probably should rename tbh
@@ -31,78 +36,82 @@ const moment = require('moment');
       // get new songs in a new time frame ----------------------------------------------------------------------------------
 
       useEffect(() => {
+        
         async function fetchSongs(userId, start, end) {
-          console.log("Fetching songs from", start, "to", end)
-            
+          
+            console.log("Fetching songs from", start, "to", end);
+    
             try {
+
                 const response = await axios.get(`http://localhost:6969/api/songs/${userId}/${start}/${end}`);
-           
-                if (response.status === 200) {
-                    console.log("Yay it workkd?",response.data);
-                }
-                var copy = [...timeFrame]
-                batch.userCount(response.data,copy)
-                setTimeFrame(copy);
-                setSongData(response.data)
-
+    
+             
+                var copy = [...timeFrame];
                 
-
+                
+                batch.userCount(response.data, copy);
+              
+                setTimeFrame(copy);
+                
+             
+                const newSongData = response.data;
+                setSongData(newSongData);
+               
+                
+                await fetchUniqueSongs(newSongData);
             } catch (error) {
                 console.error("Error fetching songs:", error);
             }
         }
-          var start;
-          var end;
-          if (timeState.year){
-              start = year.start
-              end = year.end
-          }
-          else if (timeState.month){
-              start = month.start
-              end = month.end
-          }
-          else{
-              start = day.start
-              end = day.end
-              
-          }
+    
+        var start;
+        var end;
+        if (timeState.year) {
+            start = year.start;
+            end = year.end;
+        } else if (timeState.month) {
+            start = month.start;
+            end = month.end;
+        } else {
+            start = day.start;
+            end = day.end;
+        }
+    
         fetchSongs(props.userId, start, end);
-
-    }, [timeState]);
-
-    //update song info that is available for the updated time frame ------------------------------------------------------
-
-    useEffect(() => {
-      async function fetchUniqueSongs() {
-      const songsYeah = songData.map(song => song.songId);
-        try {
-          console.log("IS THIS RUN TWICE")
-        const response = await axios.post('http://localhost:6969/api/seen/getSongs', { songIds: songsYeah });
-        const myGenres = new Set(response.data.map(song => song.genres ).flat())
-        props.onGenreChange(myGenres)
-        const songsDict = batch.uniqueSongsDict(response.data)
-        console.log("hard days work", songsDict)
-        setSongInfo(songsDict)
-        
-        
-        }
-        catch (error) {
-          console.error("Error loading unique songs:", error);
-        }
-    }
-    fetchUniqueSongs()
+    
+        async function fetchUniqueSongs(songs) {
+            const songsYeah = songs.map(song => song.songId);
+           
+            try {
           
-    }, [songData]); 
+                const response = await axios.post('http://localhost:6969/api/seen/getSongs', { songIds: songsYeah });
+                const myGenres = new Set(response.data.map(song => song.genres).flat());
+              
+                props.onGenreChange(myGenres);
+                setSongGenres(myGenres);
+                const songsDict = batch.uniqueSongsDict(response.data);
+               
+                console.log("hard days work", songsDict);
+                setSongInfo(songsDict);
+            } catch (error) {
+                console.error("Error loading unique songs:", error);
+            }
+        }
+    
+    }, [timeState]);  
+    
 
 
 //  update the opacity for song stuff ---------------------------------
     useEffect (()=> {
-      console.log(props.searchId);
+  
       var copy = [...timeFrame]
      
       batch.resetOpacity(copy)
-      console.log("WHAT EVEN IS THIS IN", props.searchGenre)
-
+      if ((props.searchId != "") || (props.searchGenre && props.searchGenre.length > 0)){
+      console.log(props.searchId);
+      
+     
       if (props.searchId != ""){
        
         batch.idCount(props.searchId,songData,copy, "song");
@@ -115,7 +124,9 @@ const moment = require('moment');
         
         batch.idCount(props.searchGenre, songData, copy, "genre", songInfo)
       }
+      }
       setTimeFrame(copy);
+      setLoading(false);
     }, [props.searchId,songInfo, props.searchGenre]);
 
     // extra time name stuff
@@ -130,34 +141,40 @@ const moment = require('moment');
 
       // Time direction switch of day, month, year
       function moveDown(split){
-          console.log(split)
+          
+            setLoading(true)
+        
           if (timeState.year){
-            setMonth(split)
-            setTimePeriod('month')
-            setTimeFrame(Time.splitRangeIntoSubRanges(split, 'month'))
+            setMonth(split);
+            setTimePeriod('month');
+            setTimeFrame(Time.splitRangeIntoSubRanges(split, 'month'));
           }
           if (timeState.month){
-            setDay(split)
-            setTimePeriod('day')
+            setDay(split);
+            setTimePeriod('day');
             //setTimeFrame(Time.splitRangeIntoSubRanges(split, 'day'))
           }
           console.log(month);
       }
 
       function moveUp(){
+  
+        setLoading(true)
         if (timeState.month){
-          setTimePeriod('year')
-          setTimeFrame(Time.splitRangeIntoSubRanges(year,'year'))
+          setTimePeriod('year');
+          setTimeFrame(Time.splitRangeIntoSubRanges(year,'year'));
         }
         if (timeState.day){
-          setTimePeriod('month')
-          setTimeFrame(Time.splitRangeIntoSubRanges(month,'month'))
+          setTimePeriod('month');
+          setTimeFrame(Time.splitRangeIntoSubRanges(month,'month'));
         }
     }
     function moveLR(direction){
+
+      setLoading(true)
         if (timeState.year){
             const newYear = Time.moveRange(year, 'year', direction);
-            setTimePeriod('year')
+            setTimePeriod('year');
             setYear(newYear);
             setTimeFrame(Time.splitRangeIntoSubRanges(newYear,'year'));
         }
@@ -205,17 +222,20 @@ const moment = require('moment');
       </Row>
       <Row className="mb-3">
         <Col className="position-relative">
-
-           
-            {timeState.day ? <SongList songs={songData} dict ={songInfo} Id = {props.searchId}/> :
-          <BarChart width={875} height={400} data={timeFrame}>
+        
+        {
+    (!loading && timeState.day) ? 
+        <SongList songs={songData} dict ={songInfo} Id = {props.searchId} genres = {[...songGenres]} time = {timeState}/> :
+        <BarChart width={875} height={400} data={timeFrame}>
+         
             <XAxis dataKey="name" angle={-30} fontSize={12} />
             <YAxis />
             <Tooltip />
             <Bar dataKey="numSongs" fill={data => `rgba(136, 132, 216, ${data.opacity})`} onClick={(data) => moveDown(data)} />
             <Text x={875 / 2} y={30} textAnchor="middle" fill="#000" fontSize={24} fontWeight="bold">Chart Name</Text>
-          </BarChart>
-  }
+        </BarChart>
+    
+}
          
         </Col>
       </Row>
