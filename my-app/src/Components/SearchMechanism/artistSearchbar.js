@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import '../buttonStyle.css';
 
 function ArtistSearchBar(props) {
     const [searchKey, setSearchKey] = useState("");
@@ -36,8 +37,8 @@ function ArtistSearchBar(props) {
 
     return (
         <>
-            <div className="container my-4">
-                <div className="input-group mb-3">
+            <div className="container my-1">
+                <div className="input-group mb-1">
                     <input
                         type="text"
                         className="form-control"
@@ -45,7 +46,7 @@ function ArtistSearchBar(props) {
                         onChange={(e) => setSearchKey(e.target.value)}
                     />
                     <div className="input-group-append">
-                        <button className="btn btn-outline-primary" type="button" onClick={searchArtist}>
+                        <button className = "btn btn-spotify-clear" type="button" onClick={searchArtist}>
                             Search
                         </button>
                     </div>

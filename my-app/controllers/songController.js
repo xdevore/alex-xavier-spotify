@@ -1,6 +1,6 @@
 const Song = require('../models/songModel.js');
 const User = require('../models/userModel.js');
-
+// add timestamped song listened to into user
 exports.addSongs = async (req, res) => {
     try {
         const { userId, songs } = req.body;
@@ -23,7 +23,7 @@ exports.addSongs = async (req, res) => {
         res.status(500).send({ message: error.message });
     }
 };
-
+//get song and timestamp from user of certain unix time frame
 exports.getSongs = async (req, res) => {
     try {
         const { userId, start, end } = req.params;

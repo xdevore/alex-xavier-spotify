@@ -7,10 +7,11 @@ const CLIENT_SECRET = "9cc4ff2e4ca84210854fa75071866db4"
 
 
 
-
+// get spotify access token from client token
 exports.getToken = async (req, res) => {
+    //get middle token
     const authCode = req.body.code;
-    console.log("first this runs")
+  
     try {
         const response = await axios({
             method: 'post',
@@ -30,7 +31,7 @@ exports.getToken = async (req, res) => {
     }
 };
 
-
+// use login access token to get user data
 exports.fetchUserProfile = async (req, res) => {
     const accessToken = req.body.accessToken;
     try {
@@ -57,18 +58,19 @@ exports.fetchUserProfile = async (req, res) => {
 // gets chunks of artists from https://github.com/pavelkomarov/exportify/blob/master/exportify.js
 
 
-
+// recieve artist data
 const getAllArtistGenres = async (artist_ids, accessToken) => {
     
 
-    
+    // change back from set
     artist_ids = Array.from(artist_ids);
     const artist_chunks = [];
+    // chank data since it only allows you to do 50 at a time
     while (artist_ids.length) {
         artist_chunks.push(artist_ids.splice(0, 50));
     }
 
-
+    // get all genre dat (aka song genres)
     const artists_promises = artist_chunks.map((chunk_ids) => 
         axios.get(`https://api.spotify.com/v1/artists?ids=${chunk_ids.join(',')}`, {
             headers: {
@@ -87,7 +89,7 @@ const getAllArtistGenres = async (artist_ids, accessToken) => {
     );
     return artist_genres;
 };
-
+//get audio features from song ids
 const getAllAudioFeatures = async (song_ids, accessToken) => {
     const song_ids_array = [...song_ids];
     try {
@@ -122,7 +124,7 @@ const getAllAudioFeatures = async (song_ids, accessToken) => {
 }
 
 
-
+// get all track data 
 const unSeenTracks = async (data, accessToken) => {
     const songInfo = [];
     const artist_ids = new Set(
@@ -134,7 +136,7 @@ const unSeenTracks = async (data, accessToken) => {
     const allArtistGenres = await getAllArtistGenres(artist_ids, accessToken);
     const allSongFeatures = await getAllAudioFeatures(song_ids, accessToken)
    
-
+    // for each song we have  to combine all song data
     for (let i = 0; i < data.length; i++) {
         const track = data[i].track;
         const genres = track.artists.map(artist => allArtistGenres[artist.id]).flat();
@@ -160,7 +162,7 @@ const unSeenTracks = async (data, accessToken) => {
         console.error('Error adding unique songs to unseen songs db:', error);
     }
 };
-
+//both send all timestamped song ids to user, and add all seen tracks to our seen db
 exports.getRecentlyPlayedSongIds = async (req, res) => {
     const accessToken = req.body.accessToken;
     const afterTimestamp = req.body.afterTimestamp;
@@ -213,7 +215,7 @@ exports.getRecentlyPlayedSongIds = async (req, res) => {
 
 
 };
-
+// search for a track in spotify
 exports.searchTrack = async (req, res) => {
     const accessToken = req.body.accessToken;
     const searchKey = req.body.searchKey;

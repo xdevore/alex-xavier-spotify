@@ -1,13 +1,13 @@
 import OpenAI from "openai";
 
 
-const openai = new OpenAI({ apiKey: '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',
+const openai = new OpenAI({ apiKey: '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',
 dangerouslyAllowBrowser: true });
 
 const getSummary = async (genres) => {
     console.log("help me pleeeease")
   try {
-    
+    //const prompt = `resturn ONLY a comma seperated sublist of List: ${genres.join(', ')} that are genres that fit well with this promp: "songs to play at a college party".`;
     const prompt = `Make a short and concise sentence describing the main 3 or 4 genres with a short description of what this music style says about your daily listening. Be very brief! List: ${genres.join(', ')}. Start with your daily Genre style encompases`;
 
     const response = await openai.chat.completions.create({
@@ -16,10 +16,9 @@ const getSummary = async (genres) => {
       max_tokens: 150
     });
 
-    // Ensure you're accessing the response correctly:
+ 
     return response.choices[0].message.content.trim();
   } catch (error) {
-    console.error('Error generating summary:', error);
     return "Error generating summary.";
   }
 }

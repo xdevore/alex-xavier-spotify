@@ -16,47 +16,41 @@ exports.userCount = (songs, timeSplits) => {
 };
 
 
-exports.idCount = (id, songs, timeSplits, type, dict = {}) => { //id is string or list depending on what is sent - should change name tbh
+exports.idCount = (id, songs, timeSplits, type, dict = {}) => {
     let maxCount = 0;
 
     for (let song of songs) {
-        if (type == 'song'){
-       
-        if ((song.songId !== id)) continue;
+        if (type == 'song' && song.songId !== id) {
+            continue;
         }
-      
-        
-        
-        
-        if (type == 'genre'){
+
+        if (type == 'genre') {
             if (!(dict[song.songId] && dict[song.songId].genres)) continue;
             if (!(dict[song.songId].genres.some(item => id.includes(item)))) continue;
         }
-        let val = 0;
-        const current = song.timestamp;
-        while (val < timeSplits.length && current > timeSplits[val].start) {
-            val++;
-            
-            
-        }
 
-        if (val != 0 && val != timeSplits.length) {
-            timeSplits[val - 1].opacity++;
-            maxCount = Math.max(maxCount, timeSplits[val - 1].opacity);
+        for (let i = 0; i < timeSplits.length; i++) {
+            if (song.timestamp >= timeSplits[i].start && song.timestamp < timeSplits[i].end) {
+                if (!timeSplits[i].opacity) {
+                    timeSplits[i].opacity = 0;  
+                }
+                timeSplits[i].opacity++;
+                maxCount = Math.max(maxCount, timeSplits[i].opacity);
+                break; 
+            }
         }
     }
 
-   
     let logMax = Math.log(maxCount);  
-
-for (let ts of timeSplits) {
-    if (ts.opacity) {
-        ts.opacity = Math.log(ts.opacity) / logMax; 
-    } else {
-        ts.opacity = 0;
+    for (let ts of timeSplits) {
+        if (ts.opacity) {
+            ts.opacity = Math.log(ts.opacity) / logMax; 
+        } else {
+            ts.opacity = 0;
+        }
     }
-}
 };
+
 
 exports.resetOpacity = (timeSplits)=>{
     for (let ts of timeSplits) {
@@ -81,7 +75,7 @@ exports.featureData = (song_list,dict) => {
         energy: 1,
         instrumentalness: 1,
         liveness: 1,
-        loudness: -60,  
+        loudness: -20,  
         speechiness: 1,
         tempo: 200,
         valence: 1

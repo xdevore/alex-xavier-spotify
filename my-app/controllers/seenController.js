@@ -1,6 +1,6 @@
 
 const Seen = require('../models/seenModel'); 
-
+// add song data to seen songs if not already exist
 const addSongs = async (req, res) => {
     const { songs } = req.body;
 
@@ -19,6 +19,7 @@ const addSongs = async (req, res) => {
         }
     }
 };
+// get specific song obect by song ids
 const getSongs = async (req, res) => {
     const { songIds } = req.body; 
 

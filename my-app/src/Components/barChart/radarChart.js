@@ -2,7 +2,7 @@ import React from 'react';
 import { Radar } from 'react-chartjs-2';
 import { Chart as ChartJS, RadarController, PointElement, LineElement, RadialLinearScale, Tooltip, Legend } from "chart.js";
 
-// Register the required controllers, elements, and plugins for Radar chart
+//Had to register stuff to use the charts for some reason
 ChartJS.register(RadarController, PointElement, LineElement, RadialLinearScale, Tooltip, Legend);
 
 function RadarChart(props) {
@@ -10,13 +10,13 @@ function RadarChart(props) {
         labels: Object.keys(props.features),
         datasets: [
             {
-                label: 'Features',
+               
                 backgroundColor: 'rgba(179,181,198,0.2)',
-                borderColor: 'rgba(179,181,198,1)',
-                pointBackgroundColor: 'rgba(179,181,198,1)',
+                borderColor: '#1DB954',
+                pointBackgroundColor: '#1DB954',
                 pointBorderColor: '#fff',
                 pointHoverBackgroundColor: '#fff',
-                pointHoverBorderColor: 'rgba(179,181,198,1)',
+                pointHoverBorderColor: '#1DB954',
                 data: Object.values(props.features)
             }
         ]
@@ -29,13 +29,20 @@ function RadarChart(props) {
             r: {
                 ticks: {
                     display: false
-                }
+                },
+                min: 0,           
+                max: 1            
+            }
+        },
+        plugins: {
+            legend: {
+                display: false
             }
         }
     };
 
     return (
-        <div style={{ width: '350px', height: '350px' }}>
+        <div style={{ width: '500px', height: '350px' }}>
             <Radar data={data} options={options} />
         </div>
     );

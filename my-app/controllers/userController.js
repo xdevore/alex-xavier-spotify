@@ -2,7 +2,7 @@ const express = require('express');
 const User = require('../models/userModel.js'); 
 
 
-
+// new user added
 exports.addUser = async (req, res) => {
     try {
         console.log("User add");
@@ -26,7 +26,7 @@ exports.addUser = async (req, res) => {
     }
 };
 
-
+//last pull from spotify api to not overlap 
 exports.updateTime = async (req, res) => {
     try {
         const user = await User.findOne({ userId: req.params.userId });
@@ -44,7 +44,7 @@ exports.updateTime = async (req, res) => {
     }
 };
 
-
+// pull the last time from database
 exports.getTime = async (req, res) => {
     try {
         const user = await User.findOne({ userId: req.params.userId });

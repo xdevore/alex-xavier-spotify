@@ -4,6 +4,7 @@ import Dropdown from 'react-bootstrap/Dropdown';
 import Button from 'react-bootstrap/Button';
 import ListGroup from 'react-bootstrap/ListGroup';
 import Card from 'react-bootstrap/Card';
+import '../buttonStyle.css';
 
 function TrackSearchBar(props) {
     const [searchKey, setSearchKey] = useState('');
@@ -32,37 +33,46 @@ function TrackSearchBar(props) {
     }
 
     return (
-        <div className="container my-4">
-            <div className="input-group mb-3">
-                <input
-                    type="text"
-                    className="form-control"
-                    placeholder="Search By Track Name ..."
-                    onChange={(e) => setSearchKey(e.target.value)}
-                />
-                <div className="input-group-append">
-                    <Button variant="outline-primary" onClick={searchTrack}>
-                        Search
-                    </Button>
-                </div>
-            </div>
-            {tracks.length > 0 && (
-                <Card className="mb-3" style={{ maxHeight: "300px", overflowY: "auto" }}>
-                    <ListGroup>
-                        {tracks.map((track) => (
-                            <ListGroup.Item 
-                                key={track.id} 
-                                onClick={() => sendId(track.id)} 
-                                style={{cursor: "pointer"}}>
-                                {track.name}
-                                <br/>
-                                {track.artist}
-                            </ListGroup.Item>
-                        ))}
-                    </ListGroup>
-                </Card>
-            )}
-        </div>
+      <div className="container my-1">
+      <div className="input-group mb-1">
+          <input
+              type="text"
+              className="form-control"
+              placeholder="Search By Track Name ..."
+              onChange={(e) => setSearchKey(e.target.value)}
+          />
+          <div className="input-group-append">
+              <Button  className = "btn btn-spotify-clear" onClick={searchTrack}>
+                  Search
+              </Button>
+              <Button className = "btn btn-spotify-clear" onClick={() => {
+                  sendId(''); // Assuming you have a function like this
+                  setTracks([]); // Clear tracks to hide dropdown
+              }}>
+                  Clear
+              </Button>
+          </div>
+      </div>
+      {tracks.length > 0 && (
+          <Card className="position-absolute" style={{ zIndex: 1000, width: "50%", maxHeight: "300px", overflowY: "auto" }}>
+              <ListGroup>
+                  {tracks.map((track) => (
+                      <ListGroup.Item 
+                          key={track.id} 
+                          onClick={() => {
+                              sendId(track.id);
+                              setTracks([]); 
+                          }} 
+                          style={{cursor: "pointer"}}>
+                          {track.name}
+                          <br/>
+                          {track.artist}
+                      </ListGroup.Item>
+                  ))}
+              </ListGroup>
+          </Card>
+      )}
+  </div>
     );
 }
 
