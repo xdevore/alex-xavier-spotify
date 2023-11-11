@@ -12,11 +12,11 @@ function RadarChart(props) {
             {
                
                 backgroundColor: 'rgba(179,181,198,0.2)',
-                borderColor: '#1DB954',
-                pointBackgroundColor: '#1DB954',
+                borderColor: '#1ED760',
+                pointBackgroundColor: '##1ED760',
                 pointBorderColor: '#fff',
                 pointHoverBackgroundColor: '#fff',
-                pointHoverBorderColor: '#1DB954',
+                pointHoverBorderColor: '#1ED760',
                 data: Object.values(props.features)
             }
         ]

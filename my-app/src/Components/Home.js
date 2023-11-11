@@ -11,7 +11,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import RefreshButton from './refreshButton';
 import ArtistSearchBar from './SearchMechanism/artistSearchbar';
 //import Time from './barChart/time'
-import BarChart from './barChart/barHolder';
+import BarChart from './timeFilter/moveTimeframe';
 import TrackSearchBar from "./SearchMechanism/trackSearchbar";
 import GenreDropdown from "./SearchMechanism/genreDropdown";
 import PlotlyChart from './genreMap/genreGraph';
@@ -22,7 +22,7 @@ function Home() {
   const accessToken = location.state ? location.state.accessToken : null;
   const userDisplayName = location.state ? location.state.userDisplayName : null;
   const userId = location.state ? location.state.userId : null;
-
+//Change: I only need one that updates with what we are using. This requires possibly an object with type of data (id, genre, artist, feature) and a list of the values. This should work smoothly
   const [searchId, setSearchId] = useState('');
   const handleFindId = (value) => {
     setSearchId(value);
@@ -33,7 +33,7 @@ function Home() {
     setGenreDisplay(value);
     }
 
-  const [searchGenre, setSearchGenre] = useState({});
+  const [searchGenre, setSearchGenre] = useState({});//weirdly for initial get grenre
   const handleFindGenre = (value) => {
     setSearchGenre(value);
     }
@@ -42,12 +42,17 @@ function Home() {
   const searchType = (search) => {
     setSelected(search)
     if (search == 'Song'){
-      setGenreDisplay('')
+      setGenreDisplay([])
     }
     else if (search == 'Genre') {
       setSearchId('')
     }
   }
+
+  const [filter, setFilter]=useState({})
+  const handleFilter = (value) => {
+    setFilter(value);
+    }
 
   
 
@@ -57,16 +62,17 @@ function Home() {
     <Container >
       <Row className="align-items-center" style={{ height: "25px" }}>
     <Col>
-        <p style={{ margin: 50, fontSize: '30px', fontFamily: "Times New Roman, serif" }}>
-            <center>Welcome, {userId}</center>
-        </p>
+    <p className="mb-0 h3 d-none d-lg-block mt-4" style={{ color: '#1ED760' }}>
+    <center>Explore How {userId} Listens</center>
+    </p>
+
     </Col>
 </Row>
 <Row className="justify-content-md-center" style={{ margin: 50 }}>
    
 <Col>
-<div className="container mt-5">
-  <nav className="navbar navbar-expand-lg navbar-light bg-light rounded-3 align-items-center" style={{ maxWidth: '600px', margin: 'auto' }}>
+<div className="container mt-2">
+  <nav className="navbar navbar-expand-lg navbar-light bg-light rounded-3 align-items-center" style={{ maxWidth: '750px', margin: 'auto' }}>
    
     <span className="navbar-brand mb-0 h1 d-none d-lg-block px-3">Music Filter</span>
 
@@ -85,6 +91,10 @@ function Home() {
         <li className="nav-item">
           <button className="btn btn-link nav-link" onClick={() => searchType('Song')}>Song</button>
         </li>
+        <li className="nav-item">
+          <button className="btn btn-link nav-link" onClick={() => searchType('Song')}>Feature</button>
+        </li>
+       
       </ul>
     </div>
     <div className="ms-auto d-none d-lg-block">
@@ -92,7 +102,7 @@ function Home() {
         <ArtistSearchBar accessToken={accessToken} /> :
         (selected === 'Song' ? 
           <TrackSearchBar onIdChange={handleFindId} accessToken={accessToken} /> :
-          <GenreDropdown items={Object.keys(searchGenre)} getGenre={handleGiveGenre} />
+          <GenreDropdown items={Object.keys(searchGenre)} getGenre={handleGiveGenre} current ={genreDisplay}/>
         )
       }
     </div>
@@ -104,9 +114,9 @@ function Home() {
 
       <Row className="justify-content-md-center" style={{margin:"40px"}}>
         <Col>
-        <Card style={{ backgroundColor: 'lightgrey', padding: '20px' }}>
+        <Card style={{ backgroundColor: '#888888', padding: '20px' }}>
           <BarChart userId={userId} searchId = {searchId} searchGenre = {genreDisplay} onGenreChange = {handleFindGenre}/>
-          <PlotlyChart genreList = {searchGenre}></PlotlyChart>
+          <PlotlyChart getGenre={handleGiveGenre} genreList = {searchGenre} current ={genreDisplay}></PlotlyChart>
           </Card>
         </Col>
       </Row>

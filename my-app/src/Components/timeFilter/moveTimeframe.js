@@ -2,11 +2,13 @@ import Time from './time'
 import React, { useEffect, useState } from 'react';
 import { BarChart, XAxis, YAxis, Tooltip, Bar, Cell, Text } from 'recharts';
 import axios from 'axios';
-import batch from './batchCounter';
+import batch from './counter';
 import { Button, Card, Row, Col } from 'react-bootstrap';
 import SongList from './songList';
 import '../buttonStyle.css';
 import { getSummary } from '../openAI/genreSummary';
+import DropdownButton from 'react-bootstrap/DropdownButton';
+import Dropdown from 'react-bootstrap/Dropdown';
 const moment = require('moment');
 
 
@@ -15,14 +17,17 @@ const moment = require('moment');
     
 
     const [loading, setLoading] = useState(true);
-
+    // Change: updated mechanics means this should only be one argument:
     const [year, setYear] = useState(Time.getCurrentYearRange());
     const [month, setMonth] = useState({});
     const [day, setDay] = useState({});
+
     const [songGenres, setSongGenres] = useState([])
     const [timeFrame, setTimeFrame]= useState(Time.splitRangeIntoSubRanges(year,'year'))
 
     const [songInfo, setSongInfo]=useState({}) //dictionary stuff probably should rename tbh
+
+    const [starred, setStarred] = useState([]);
      
 
     const [timeState, setTimeState] = useState({
@@ -43,27 +48,32 @@ const moment = require('moment');
     
             try {
 
-                const response = await axios.get(`http://localhost:6969/api/songs/${userId}/${start}/${end}`);
+                const response = await axios.get(`http://localhost:7001/api/songs/${userId}/${start}/${end}`);
     
-             
+              // Change: change timeframe to be created in here so I dont need to make a copy of the data.
+              if (!timeState.day){
                 var copy = [...timeFrame];
-                
                 
                 batch.userCount(response.data, copy);
               
                 setTimeFrame(copy);
+              }
                 
-             
                 const newSongData = response.data;
                 setSongData(newSongData);
+
                
-                
                 await fetchUniqueSongs(newSongData);
+
+                const starredData = await fetchStars(userId);
+                //Change: eventually just call once when login, send new ones up in prop from dat chart
+                setStarred(starredData.starred)
+
             } catch (error) {
                 console.error("Error fetching songs:", error);
             }
         }
-    
+        // Apon update this shouldnt exist
         var start;
         var end;
         if (timeState.year) {
@@ -84,10 +94,10 @@ const moment = require('moment');
            
             try {
           
-                const response = await axios.post('http://localhost:6969/api/seen/getSongs', { songIds: songsYeah });
+                const response = await axios.post('http://localhost:7001/api/seen/getSongs', { songIds: songsYeah });
                 const myGenres = response.data.map(song => song.genres).flat();
+                 //Data to send up for genre dropdown/ plotly genre map
                 const counter = {};
-  
                 myGenres.forEach(item => {
                   if (counter[item]) {
                     counter[item] += 1;
@@ -96,14 +106,28 @@ const moment = require('moment');
                   }
                 });
                 props.onGenreChange(counter);
-                setSongGenres(Object.keys(counter));
+                //setSongGenres(Object.keys(counter));
+                setSongGenres(myGenres)
+                // turn list of objects into dict of objects
                 const songsDict = batch.uniqueSongsDict(response.data);
                
                 console.log("hard days work", songsDict);
+                
                 setSongInfo(songsDict);
             } catch (error) {
                 console.error("Error loading unique songs:", error);
             }
+        }
+        //GET STarred data
+        async function fetchStars(userId) {
+          try {
+            const response = await axios.get(`http://localhost:7001/api/users/${userId}/star`);
+            console.log('Starred data:', response.data);
+            return response.data; 
+          } catch (error) {
+            console.error('Error fetching starred data:', error);
+            throw error; 
+          }
         }
     
     }, [timeState]);  
@@ -116,6 +140,7 @@ const moment = require('moment');
       var copy = [...timeFrame]
      
       batch.resetOpacity(copy)
+      //These next few lines are a mess- first arguemnt to idCount can be a list or astring- never checked lol
       if ((props.searchId != "") || (props.searchGenre && props.searchGenre.length > 0)){
       console.log(props.searchId);
       
@@ -126,12 +151,14 @@ const moment = require('moment');
         }
 
       else if (props.searchGenre && props.searchGenre.length > 0) {
-        console.log("called on update",props.searchGenre)
-        console.log("song ids", songData)
-        console.log("Dictionary", songInfo)
+     
         
         batch.idCount(props.searchGenre, songData, copy, "genre", songInfo)
-      }
+      } 
+      //will use when I update the search drilling
+      //batch.idCount((props.filter).body, songData, copy, (props.filter).name, songInfo)
+
+
       }
       setTimeFrame(copy);
       setLoading(false);
@@ -153,28 +180,35 @@ const moment = require('moment');
             setLoading(true)
         
           if (timeState.year){
-            setMonth(split);
+            setMonth({start: split.start,
+              end: split.end});
             setTimePeriod('month');
             setTimeFrame(Time.splitRangeIntoSubRanges(split, 'month'));
           }
           if (timeState.month){
-            setDay(split);
+            
+            setDay({start: split.start,
+            end: split.end});
             setTimePeriod('day');
             //setTimeFrame(Time.splitRangeIntoSubRanges(split, 'day'))
           }
           console.log(month);
       }
-
+    
       function moveUp(){
   
         setLoading(true)
         if (timeState.month){
           setTimePeriod('year');
-          setTimeFrame(Time.splitRangeIntoSubRanges(year,'year'));
+          const newYear = Time.moveUp(month, 'year')
+          setYear(newYear)
+          setTimeFrame(Time.splitRangeIntoSubRanges(newYear,'year'));
         }
         if (timeState.day){
           setTimePeriod('month');
-          setTimeFrame(Time.splitRangeIntoSubRanges(month,'month'));
+          const newMonth = Time.moveUp(day, 'month')
+          setMonth(newMonth)
+          setTimeFrame(Time.splitRangeIntoSubRanges(newMonth,'month'));
         }
     }
     function moveLR(direction){
@@ -218,7 +252,7 @@ const moment = require('moment');
         <>
             <Row className="mb-3">
         <Col xs={12} className="text-center">
-            <h3>Songs Played {timeLabel()}</h3>
+            <h3 className = "mb-0 h3 d-none d-lg-block px-3">Songs Played {timeLabel()}</h3>
         </Col>
     </Row>
       <Row className="mb-3">
@@ -227,30 +261,47 @@ const moment = require('moment');
             <i className="bi bi-arrow-left">Back</i>
           </Button>
         </Col>
+        <Col xs={2} className="ms-auto">
+        <div className="my-auto">
+        <DropdownButton id="dropdown-basic-button" title="Starred Days" variant="light">
+  {starred.map((star, index) => (
+    <Dropdown.Item 
+      key={index} 
+      as="button" 
+      onClick={() => {
+        setLoading(true);
+        setDay({start: star.start,
+          end: star.end});
+          setTimePeriod('day');
+      }}
+    >
+      {star.message}
+    </Dropdown.Item>
+  ))}
+</DropdownButton>
+</div>
+</Col>
       </Row>
       <Row className="mb-3">
         <Col className="position-relative">
         
         {
     (!loading && timeState.day) ? 
-        <SongList songs={songData} dict ={songInfo} Id = {props.searchId} genres = {songGenres} chosenGenres = {props.searchGenre} time = {timeState}/> :
-        <BarChart width={1000} height={400} data={timeFrame}>
+        <SongList songs={songData} dict ={songInfo} Id = {props.searchId} genres = {songGenres} 
+        chosenGenres = {props.searchGenre} time = {day} timeLabel = {timeLabel()} stars = {starred} userId = {props.userId}/> :
+        <BarChart width={1100} height={400} data={timeFrame}>
   <XAxis dataKey="name" angle={-30} fontSize={12} />
   <YAxis />
   <Tooltip />
   <Bar
     dataKey="numSongs"
-    fill={data => `rgba(136, 132, 216, ${data.opacity})`}
+    fill={data => `rgba(30, 215, 96, ${data.opacity})`}
     stroke="#000" 
     strokeWidth={1} 
     onClick={(data) => moveDown(data)}
   />
   <Text x={875 / 2} y={30} textAnchor="middle" fill="#000" fontSize={24} fontWeight="bold">Chart Name</Text>
-</BarChart>
-
-    
-}
-         
+</BarChart>}   
         </Col>
       </Row>
       <Row className="text-center">

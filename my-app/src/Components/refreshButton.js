@@ -16,7 +16,7 @@ function refreshButton(props) {
     async function getRecentlyPlayed(accessToken) {
         console.log("made it to the function")
         try {
-          const res = await axios.post(`http://localhost:6969/spotify/get-recently-played-song-ids`, { accessToken: accessToken });
+          const res = await axios.post(`http://localhost:7001/spotify/get-recently-played-song-ids`, { accessToken: accessToken, userId: props.userId });
           const recentlyPlayedSongIds = res.data.recentlyPlayedSongIds;
 
           console.log(recentlyPlayedSongIds);
@@ -26,7 +26,7 @@ function refreshButton(props) {
         };
           try {
             
-            const response = await axios.post('http://localhost:6969/api/songs/', data);
+            const response = await axios.post('http://localhost:7001/api/songs/', data);
             console.log('Songs added successfully:', response.data);
           } catch (error) {
             console.error('Error adding songs:', error);

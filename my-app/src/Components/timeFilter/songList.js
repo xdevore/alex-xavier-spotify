@@ -2,11 +2,13 @@ import React, { useEffect, useState } from 'react';
 
 import { Row, Col } from 'react-bootstrap';
 import { getSummary } from '../openAI/genreSummary';
-import batch from './batchCounter';
+import batch from './counter';
 import RadarChart from './radarChart';
 import { genresDictionary } from '../genreMap/genreDict.js';
+import { BsStar, BsStarFill } from 'react-icons/bs';
+import Starred from './starred';
 
-// Use `genresDictionary` as needed
+
 
 
 function SongList(props) {
@@ -17,7 +19,6 @@ function SongList(props) {
 
 useEffect(() => {
     const timer = setTimeout(() => {
-      console.log("please please dude", genresDictionary);
         if (props.genres && props.genres.length > 0 && (JSON.stringify(props.genres) !== JSON.stringify(myGenres))) {
             setMyGenres(props.genres);
 
@@ -40,6 +41,7 @@ return (
     
    
     <div className="col-md-6">
+      <Starred timeLabel = {props.timeLabel} time={props.time} stars= {props.stars} userId = {props.userId}/>
       <ul className="list-group" style={{ maxHeight: '470px', overflowY: 'auto' }}>
         {props.songs.map(song => {
            

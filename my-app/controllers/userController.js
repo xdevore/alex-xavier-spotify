@@ -58,4 +58,34 @@ exports.getTime = async (req, res) => {
     }
 };
 
+exports.updateStarred = async (req, res) => {
+    try {
+        const user = await User.findOne({ userId: req.params.userId });
+        if (!user) {
+            return res.status(404).send({ message: 'User not found' });
+        }
+
+        user.starred = req.body.starred;
+        await user.save();
+
+        res.status(200).send(user);
+    } catch (error) {
+        console.log("error updating starred days")
+        res.status(400).send({ message: error.message });
+    }
+};
+
+exports.getStarred = async (req, res) => {
+    try {
+        const user = await User.findOne({ userId: req.params.userId });
+        if (!user){
+            res.status(404).send({message: 'user doesnt exist'})
+        }
+        res.status(200).send({ starred: user.starred });
+    } catch (error) {
+        console.log("error getting starred times")
+        res.status(400).send({ message: error.message });
+    }
+};
+
 

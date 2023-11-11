@@ -15,7 +15,7 @@ exports.userCount = (songs, timeSplits) => {
     }
 };
 
-
+//change: Will be less bad once I update stuff
 exports.idCount = (id, songs, timeSplits, type, dict = {}) => {
     let maxCount = 0;
 
@@ -105,7 +105,7 @@ exports.featureData = (song_list,dict) => {
     Object.keys(Normalized_features).forEach(key => {
         Normalized_features[key] /= song_list.length;
     });
-
+    
     return Normalized_features;
 }
 

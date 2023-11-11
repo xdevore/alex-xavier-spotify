@@ -12,7 +12,15 @@ const userSchema = new mongoose.Schema({
     default: 0,
     required: false
   },
-  songs: [Song.schema]
+  accessToken: {  // When I start auto refreshing
+    type: String,
+    required: false
+  },
+  songs: [Song.schema],
+  starred: {
+    type: [Object], 
+    default: []     
+  }
 });
 
 const User = mongoose.model('User', userSchema);

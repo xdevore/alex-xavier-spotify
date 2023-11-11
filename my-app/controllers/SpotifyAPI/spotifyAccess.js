@@ -1,7 +1,9 @@
 const axios = require('axios');
-const CLIENT_ID = "144e7866c95e4f018ee8ff57b0149d23"
+const CLIENT_ID = process.env.REACT_APP_SPOTIFY_CLIENT_ID;
+"144e7866c95e4f018ee8ff57b0149d23"
 //process.env.REACT_APP_SPOTIFY_CLIENT_ID;
-const CLIENT_SECRET = "9cc4ff2e4ca84210854fa75071866db4"
+const CLIENT_SECRET = process.env.REACT_APP_SPOTIFY_SECRET_KEY;
+"9cc4ff2e4ca84210854fa75071866db4"
 //process.env.REACT_APP_SPOTIFY_SECRET_KEY;
 
 
@@ -115,7 +117,7 @@ const getAllAudioFeatures = async (song_ids, accessToken) => {
                 valence: feature.valence
             };
         });
-        console.log("LETS EEEEEEEE\n\n\n", song_features)
+        //console.log("LETS EEEEEEEE\n\n\n", song_features)
 
         return song_features;
     } catch (error) {
@@ -157,63 +159,58 @@ const unSeenTracks = async (data, accessToken) => {
 
        
         
-        const response = await axios.post('http://localhost:6969/api/seen/', { songs: songInfo });
+        const response = await axios.post('http://localhost:7001/api/seen/', { songs: songInfo });
     } catch (error) {
         console.error('Error adding unique songs to unseen songs db:', error);
     }
 };
 //both send all timestamped song ids to user, and add all seen tracks to our seen db
 exports.getRecentlyPlayedSongIds = async (req, res) => {
+    const userId = req.body.userId
     const accessToken = req.body.accessToken;
     const afterTimestamp = req.body.afterTimestamp;
-    // add in to url for after timestamp 
-    // &after=${afterTimestamp}
-    try {
-        //get the timestamp and use it to get recent songs
-        
-        const response = await axios({
-            method: "GET",
-            url: `https://api.spotify.com/v1/me/player/recently-played?limit=50`,
-            headers: {
-                Authorization: `Bearer ${accessToken}`
-            },
-        });
-        console.log("gets song atleast");
-        //var timestamp = Date(response.data.items[0].played_at).getTime(); //make sure not empty
-        //console.log(timestamp)
+    
+try {
+    //Fetch last timestamp
+    const lastPullResponse = await axios.get(`http://localhost:7001/api/users/${userId}/timestamp`);
+    const lastTimestamp = lastPullResponse.data.lastPull;
 
-        // noew we want to save the new timestamp, whihc hoepfully this works below:
-        // try {
-        //     const response = await axios.post(`http://localhost:6969/api/users/${userId}/timestamp`, timestamp);
-        //     console.log('Response:', response.data);
-        // } catch (error) {
-        //     console.error('Error:', error);
-        // }
-        var songDataList = response.data.items;
-        const add_this_ting = await unSeenTracks(songDataList, accessToken)
-        console.log("These are all of the added stuffs", add_this_ting)
-       
-        
+    // get recently played from last timestamp
+    const response = await axios({
+        method: "GET",
+        url: `https://api.spotify.com/v1/me/player/recently-played?limit=50&after=${lastTimestamp}`,
+        headers: {
+            Authorization: `Bearer ${accessToken}`
+        },
+    });
 
-
-        const recentlyPlayedSongIds = [];
-        for (var i = 0; i < songDataList.length; i++){
-            recentlyPlayedSongIds.push({
-                songId: songDataList[i].track.id,
-                timestamp: new Date(songDataList[i].played_at).getTime() 
-            });
-        }
-        res.json({ recentlyPlayedSongIds: recentlyPlayedSongIds });
-        
-    } catch (error) {
-        console.error('Error fetching from Spotify:', error.message);
-        console.error('Error fetching the recently played songs from Spotify:', error.response ? error.response.data : error.message);
-        res.status(500).send('Error fetching the recently played songs from Spotify');
+    // Only send to db if there are new songs
+    if (response.data.items.length === 0) {
+        console.log("No new songs played since the last check.");
+        return; // Exit if no new songs
     }
 
-    // response.data to call and add to unsen tracks
+    // save the song daya
+    const songDataList = response.data.items;
+    const add_this_ting = await unSeenTracks(songDataList, accessToken);
+    console.log("These are all of the added stuffs", add_this_ting);
 
+    // Now make the recentlyt played song data
+    const recentlyPlayedSongIds = songDataList.map(songData => ({
+        songId: songData.track.id,
+        timestamp: new Date(songData.played_at).getTime()
+    }));
+    console.log("all THAT I NEED\n\n\n\n\n\n\n", recentlyPlayedSongIds);
 
+    
+    const latestTimestamp = recentlyPlayedSongIds[0].timestamp;
+    await axios.post(`http://localhost:7001/api/users/${userId}/timestamp`, { lastPull: latestTimestamp });
+
+    
+    res.json({ recentlyPlayedSongIds });
+} catch (error) {
+    console.error('Error:', error);
+}
 };
 // search for a track in spotify
 exports.searchTrack = async (req, res) => {

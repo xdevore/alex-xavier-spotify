@@ -5,21 +5,21 @@ const addSongs = async (req, res) => {
     const { songs } = req.body;
 
     if (!songs || !Array.isArray(songs)) {
-        return res.status(400).send({ message: 'Didnt send songs over to be added uniquelly' });
+        return res.status(400).send({ message: 'Need to send array of songs.. not what you did' });
     }
 
     try {
         const response = await Seen.insertMany(songs, { ordered: false });
         res.status(201).send(response);
     } catch (error) {
-        if (error.code === 11000) {  // 11000 is MongoDB's code for a duplicate key error
-            res.status(201).send(error.result.nInserted + " songs inserted. Some songs were already in the database.");
+        if (error.code === 11000) {  
+            res.status(201).send(error.result.nInserted + " songs inserted. This just means there were some dups.");
         } else {
             res.status(500).send({ message: 'Internal Server Error', error: error.message });
         }
     }
 };
-// get specific song obect by song ids
+// get l
 const getSongs = async (req, res) => {
     const { songIds } = req.body; 
 

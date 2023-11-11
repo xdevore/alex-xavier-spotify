@@ -1,10 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Dropdown, DropdownButton } from 'react-bootstrap';
 import Button from 'react-bootstrap/Button';
 import '../buttonStyle.css';
 
 function GenreDropdown(props) {
-  const [checkedItems, setCheckedItems] = useState([]);
+  const [checkedItems, setCheckedItems] = useState(props.current);
+//Change: temporary fix - now that two places use genre filter handleChackChange should exist in Home level so no extra renders
+  useEffect(()=>{
+    setCheckedItems(props.current)
+  },[props.current])
 
   const handleCheckChange = (item, event) => {
     event.stopPropagation();
@@ -15,7 +19,6 @@ function GenreDropdown(props) {
     } else {
       newCheckedItems = [...checkedItems, item]; 
     }
-    console.log("It starts here", newCheckedItems);
     props.getGenre(newCheckedItems); 
     setCheckedItems(newCheckedItems);
   };

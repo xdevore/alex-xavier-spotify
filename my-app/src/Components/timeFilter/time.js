@@ -18,12 +18,19 @@ function moveRange(range, unit, direction) {
     const end = moment(range.end).add(factor, unit);
     return {
       start: start.valueOf(),
-      end: end.valueOf(),
-      name: "",
-        numSongs: 0,
-        opacity: 1
+      end: end.valueOf()
     };
 }
+
+function moveUp(range, unit){
+    const start = moment(range.start).startOf(unit);
+    const end = moment(range.end).endOf(unit);
+
+    return {
+        start: start.valueOf(),
+        end: end.valueOf()
+    };
+};
 
 function splitRangeIntoSubRanges(range, unit) {
     const lengthMap = {
@@ -65,7 +72,8 @@ function splitRangeIntoSubRanges(range, unit) {
 module.exports = {
   getCurrentYearRange,
   splitRangeIntoSubRanges,
-  moveRange
+  moveRange,
+  moveUp
 };
 
 

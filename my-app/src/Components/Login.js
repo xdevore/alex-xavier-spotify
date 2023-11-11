@@ -28,12 +28,12 @@ function Login() {
   async function fetchAccessToken(code) {
     try {
       console.log(code)
-        const res = await axios.post(`http://localhost:6969/spotify/get-token`, { code: code });
+        const res = await axios.post(`http://localhost:7001/spotify/get-token`, { code: code });
         console.log("got the response", res.data.access_token)
         const fetchedToken = res.data.access_token;
         localStorage.setItem("spotify_access_token", fetchedToken);
         
-        const userProfileRes = await axios.post(`http://localhost:6969/spotify/fetch-user-profile`, { accessToken: fetchedToken });
+        const userProfileRes = await axios.post(`http://localhost:7001/spotify/fetch-user-profile`, { accessToken: fetchedToken });
         const userDisplayName = userProfileRes.data.userDisplayName;
         const userId = userProfileRes.data.userId;
         
@@ -54,7 +54,7 @@ function Login() {
   async function addUser(userId){
     try {
         
-        const response = await axios.post('http://localhost:6969/api/users/', { userId: userId });
+        const response = await axios.post('http://localhost:7001/api/users/', { userId: userId });
         console.log('User added:', response.data);
     } catch (error) {
         console.error('Error adding user:', error);
@@ -62,7 +62,8 @@ function Login() {
   }
 
   const redirectToSpotify = () => {
-    const CLIENT_ID = "144e7866c95e4f018ee8ff57b0149d23"
+    const CLIENT_ID = process.env.REACT_APP_SPOTIFY_CLIENT_ID;
+    //"144e7866c95e4f018ee8ff57b0149d23"
     //process.env.REACT_APP_SPOTIFY_CLIENT_ID;
     const REDIRECT_URI = 'http://localhost:3000/login'; 
     const scopes = ['user-top-read', 'user-read-recently-played', 'user-library-read', 'user-follow-read']; 

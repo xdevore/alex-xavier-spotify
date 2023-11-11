@@ -1,7 +1,7 @@
 
 .btn-spotify-clear {
-    color: #1DB954 !important; 
-    border: 2px solid #1DB954 !important; 
+    color: #1ED760 !important; 
+    border: 2px solid #1ED760 !important; 
     background-color: transparent !important;
     transition: background-color 0.3s ease !important; 
   }
@@ -9,6 +9,6 @@
   .btn-spotify-clear:hover,
   .btn-spotify-clear:focus {
     color: #fff !important;  
-    background-color: #1DB954 !important; 
-    border-color: #1DB954 !important; 
+    background-color: #1ED760 !important; 
+    border-color: #1ED760 !important; 
   }

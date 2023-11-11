@@ -9,4 +9,9 @@ router.route("/:userId/timestamp").post(userController.updateTime)
 
 router.route("/:userId/timestamp").get(userController.getTime)
 
+router.route("/:userId/star").post(userController.updateStarred)
+
+
+router.route("/:userId/star").get(userController.getStarred)
+
 module.exports = router;

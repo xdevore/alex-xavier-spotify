@@ -37,8 +37,8 @@ function ArtistSearchBar(props) {
 
     return (
         <>
-            <div className="container my-1">
-                <div className="input-group mb-1">
+            <div className="container my-0">
+                <div className="input-group mb-0">
                     <input
                         type="text"
                         className="form-control"

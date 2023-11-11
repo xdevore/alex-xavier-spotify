@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cors = require('cors');  
 const app = express();
-const PORT = 6969;
+const PORT = 7001;
 
 const spotifyRoutes = require('./routes/spotifyRoutes');
 const songRoutes = require('./routes/songRoutes'); 
